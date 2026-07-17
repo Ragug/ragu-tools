@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>Unix Timestamp Converter & Decoder - Ragu Tools</title>
+    <meta name="description" content="Free online Unix timestamp converter and epoch decoder. Convert timestamps to UTC, Local, and ISO dates or generate epoch numbers.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .live-badge {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        .output-value {
+            word-break: break-all;
+        }
+
+        /* Light Mode Defaults */
+        [data-bs-theme="light"] .bg-output-box {
+            background-color: #f8f9fa !important;
+            border-color: #dee2e6 !important;
+        }
+
+        /* High-Contrast Dark Mode Overrides */
+        [data-bs-theme="dark"] .bg-output-box {
+            background-color: #1a1d20 !important;
+            border-color: #343a40 !important;
+        }
+
+        [data-bs-theme="dark"] .text-primary {
+            color: #6ea8fe !important; /* High-contrast accessible blue */
+        }
+
+        [data-bs-theme="dark"] .text-info {
+            color: #6edff6 !important; /* High-contrast bright cyan */
+        }
+
+        [data-bs-theme="dark"] .btn-outline-info {
+            color: #6edff6;
+            border-color: #6edff6;
+        }
+
+        [data-bs-theme="dark"] .btn-outline-info:hover {
+            background-color: #0dcaf0;
+            border-color: #0dcaf0;
+            color: #000000;
+        }
+
+        [data-bs-theme="dark"] .btn-outline-primary {
+            color: #6ea8fe;
+            border-color: #6ea8fe;
+        }
+
+        [data-bs-theme="dark"] .btn-outline-primary:hover {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            color: #ffffff;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<nav id="navbar"></nav>
+
+<main class="container py-5">
+
+<h1 class="mb-3">
+    <i class="fa-solid fa-clock text-info me-2"></i>Unix Timestamp Converter
+</h1>
+
+<p class="text-secondary lead fs-6">
+    Convert Unix epoch timestamps to human-readable date/time strings or generate timestamps from custom dates.
+</p>
+
+<!-- Live Current Epoch Bar -->
+<div class="card shadow-sm mb-4 border">
+    <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-danger live-badge">LIVE</span>
+            <span class="fw-semibold text-body">Current Unix Epoch Time:</span>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span id="currentEpoch" class="fs-4 font-monospace fw-bold text-info">0000000000</span>
+            <button id="copyCurrentEpoch" class="btn btn-sm btn-outline-info" title="Copy current epoch">
+                <i class="fa-solid fa-copy me-1"></i> Copy
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Section 1: Decode Unix Timestamp to Date -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title mb-3">
+                    <i class="fa-solid fa-unlock text-success me-2"></i>Decode Timestamp
+                </h2>
+
+                <div class="mb-3">
+                    <label for="decodeInput" class="form-label fw-semibold text-body">
+                        Enter Unix Timestamp (Seconds or Milliseconds)
+                    </label>
+                    <div class="input-group">
+                        <input
+                            type="number"
+                            id="decodeInput"
+                            class="form-control font-monospace"
+                            placeholder="e.g. 1700000000">
+                        <button id="btnCurrent" class="btn btn-outline-info">
+                            Set to Now
+                        </button>
+                    </div>
+                </div>
+
+                <div class="p-3 rounded border bg-output-box">
+                    <div class="mb-3">
+                        <small class="text-body-secondary d-block fw-semibold mb-1">
+                            <i class="fa-solid fa-globe me-1 text-info"></i> GMT / UTC Time
+                        </small>
+                        <span id="outUtc" class="font-monospace text-body fw-bold fs-6 output-value">-</span>
+                    </div>
+
+                    <div class="mb-3">
+                        <small class="text-body-secondary d-block fw-semibold mb-1">
+                            <i class="fa-solid fa-location-dot me-1 text-success"></i> Your Local Time
+                        </small>
+                        <span id="outLocal" class="font-monospace text-body fw-bold fs-6 output-value">-</span>
+                    </div>
+
+                    <div>
+                        <small class="text-body-secondary d-block fw-semibold mb-1">
+                            <i class="fa-solid fa-code me-1 text-warning"></i> ISO 8601
+                        </small>
+                        <span id="outIso" class="font-monospace text-body fw-bold fs-6 output-value">-</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Section 2: Encode Date to Unix Timestamp -->
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body">
+                <h2 class="h5 card-title mb-3">
+                    <i class="fa-solid fa-lock text-info me-2"></i>Encode Date to Timestamp
+                </h2>
+
+                <div class="mb-3">
+                    <label for="encodeInput" class="form-label fw-semibold text-body">
+                        Select Date and Time
+                    </label>
+                    <input
+                        type="datetime-local"
+                        id="encodeInput"
+                        class="form-control font-monospace">
+                </div>
+
+                <div class="p-3 rounded border bg-output-box">
+                    <div class="mb-3">
+                        <small class="text-body-secondary d-block fw-semibold mb-1">
+                            Unix Timestamp (Seconds - 10 digits)
+                        </small>
+                        <div class="d-flex justify-content-between align-items-center gap-2">
+                            <span id="outSec" class="font-monospace text-info fw-bold fs-5 output-value">-</span>
+                            <button class="btn btn-sm btn-outline-info" onclick="copyValue('outSec')">
+                                <i class="fa-solid fa-copy me-1"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <small class="text-body-secondary d-block fw-semibold mb-1">
+                            Unix Timestamp (Milliseconds - 13 digits)
+                        </small>
+                        <div class="d-flex justify-content-between align-items-center gap-2">
+                            <span id="outMs" class="font-monospace text-primary fw-bold fs-6 output-value">-</span>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="copyValue('outMs')">
+                                <i class="fa-solid fa-copy me-1"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEO Content Section -->
+<section class="mt-5 pt-4 border-top">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="h4 mb-3">What is a Unix Timestamp?</h2>
+            <p class="text-secondary">
+                A Unix timestamp (also known as Epoch time or POSIX time) measures time as the total number of seconds elapsed since <strong>00:00:00 UTC on January 1, 1970</strong> (excluding leap seconds). It is the universal standard for logging events, storing datetime fields in databases, and syncing systems globally.
+            </p>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <h3 class="h5">Seconds vs. Milliseconds</h3>
+            <ul class="text-secondary ps-3">
+                <li><strong>Seconds (10 Digits):</strong> Standard Unix epoch timestamp used across C, C++, Python, PHP, and SQL databases.</li>
+                <li><strong>Milliseconds (13 Digits):</strong> Used natively in JavaScript (<code>Date.now()</code>) and Java for sub-second precision.</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h3 class="h5">Developer Quick Reference</h3>
+            <ul class="text-secondary ps-3">
+                <li><strong>JavaScript:</strong> <code>Math.floor(Date.now() / 1000)</code></li>
+                <li><strong>Python:</strong> <code>import time; int(time.time())</code></li>
+                <li><strong>SQL (MySQL):</strong> <code>SELECT UNIX_TIMESTAMP();</code></li>
+                <li><strong>Bash / Linux:</strong> <code>date +%s</code></li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer id="footer"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="../js/utils.js"></script>
+<script src="../js/tools.js"></script>
+<script src="../js/app.js"></script>
+
+<script>
+
+// Elements
+const currentEpochEl = document.getElementById("currentEpoch");
+const copyCurrentEpochBtn = document.getElementById("copyCurrentEpoch");
+
+const decodeInput = document.getElementById("decodeInput");
+const btnCurrent = document.getElementById("btnCurrent");
+const outUtc = document.getElementById("outUtc");
+const outLocal = document.getElementById("outLocal");
+const outIso = document.getElementById("outIso");
+
+const encodeInput = document.getElementById("encodeInput");
+const outSec = document.getElementById("outSec");
+const outMs = document.getElementById("outMs");
+
+// Live Epoch Clock
+function updateClock() {
+    const nowSec = Math.floor(Date.now() / 1000);
+    currentEpochEl.textContent = nowSec;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// Decode Functionality
+function decodeTimestamp() {
+    let val = decodeInput.value.trim();
+    if (!val) {
+        outUtc.textContent = "-";
+        outLocal.textContent = "-";
+        outIso.textContent = "-";
+        return;
+    }
+
+    let num = Number(val);
+    if (isNaN(num)) {
+        outUtc.textContent = "Invalid Number";
+        outLocal.textContent = "Invalid Number";
+        outIso.textContent = "Invalid Number";
+        return;
+    }
+
+    // Auto-detect milliseconds (13 digits) vs seconds (10 digits)
+    if (val.length > 11) {
+        num = num;
+    } else {
+        num = num * 1000;
+    }
+
+    const date = new Date(num);
+    if (isNaN(date.getTime())) {
+        outUtc.textContent = "Invalid Date";
+        outLocal.textContent = "Invalid Date";
+        outIso.textContent = "Invalid Date";
+        return;
+    }
+
+    outUtc.textContent = date.toUTCString();
+    outLocal.textContent = date.toString();
+    outIso.textContent = date.toISOString();
+}
+
+// Encode Functionality
+function encodeDate() {
+    const val = encodeInput.value;
+    if (!val) {
+        outSec.textContent = "-";
+        outMs.textContent = "-";
+        return;
+    }
+
+    const date = new Date(val);
+    const ms = date.getTime();
+    const sec = Math.floor(ms / 1000);
+
+    outSec.textContent = sec;
+    outMs.textContent = ms;
+}
+
+// Copy Helper
+async function copyValue(id) {
+    const element = document.getElementById(id);
+    const text = element.textContent;
+    if (text && text !== "-") {
+        await navigator.clipboard.writeText(text);
+    }
+}
+
+// Event Listeners
+decodeInput.addEventListener("input", decodeTimestamp);
+
+btnCurrent.onclick = () => {
+    decodeInput.value = Math.floor(Date.now() / 1000);
+    decodeTimestamp();
+};
+
+encodeInput.addEventListener("input", encodeDate);
+
+copyCurrentEpochBtn.onclick = async () => {
+    await navigator.clipboard.writeText(currentEpochEl.textContent);
+    const originalText = copyCurrentEpochBtn.innerHTML;
+    copyCurrentEpochBtn.innerHTML = `<i class="fa-solid fa-check me-1 text-success"></i> Copied!`;
+    setTimeout(() => {
+        copyCurrentEpochBtn.innerHTML = originalText;
+    }, 1500);
+};
+
+// Set default input for encoder to current time
+const now = new Date();
+now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+encodeInput.value = now.toISOString().slice(0, 16);
+encodeDate();
+
+</script>
+
+</body>
+
+</html>

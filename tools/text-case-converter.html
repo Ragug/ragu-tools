@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>Text Case Converter - Ragu Tools</title>
+    <meta name="description" content="Free online text case converter tool. Convert text to camelCase, PascalCase, snake_case, kebab-case, UPPERCASE, lowercase, Title Case, and more instantly.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        /* Custom styles to ensure high contrast in light & dark mode */
+        .case-btn-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .case-btn {
+            border: 1px solid var(--bs-border-color, #dee2e6);
+            background-color: var(--bs-body-bg, #ffffff);
+            color: var(--bs-body-color, #212529);
+            padding: 0.6rem 0.8rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-align: left;
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .case-btn:hover {
+            border-color: #0d6efd;
+            background-color: rgba(13, 110, 253, 0.08);
+            color: #0d6efd;
+        }
+
+        .case-btn.active {
+            border-color: #0d6efd;
+            background-color: #0d6efd;
+            color: #ffffff !important;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.25);
+        }
+
+        .case-btn .badge-case {
+            font-size: 0.75rem;
+            opacity: 0.75;
+            font-family: monospace;
+        }
+
+        /* Dark mode specific tweaks */
+        [data-bs-theme="dark"] .case-btn {
+            background-color: #2b3035;
+            border-color: #495057;
+            color: #e9ecef;
+        }
+
+        [data-bs-theme="dark"] .case-btn:hover {
+            background-color: #343a40;
+            border-color: #6ea8fe;
+            color: #6ea8fe;
+        }
+
+        [data-bs-theme="dark"] .case-btn.active {
+            background-color: #0d6efd;
+            color: #ffffff !important;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<nav id="navbar"></nav>
+
+<main class="container py-5">
+
+<h1 class="mb-3">
+    <i class="fa-solid fa-font text-primary me-2"></i>Text Case Converter
+</h1>
+
+<p class="text-secondary lead fs-6">
+    Convert your text between different letter cases including camelCase, PascalCase, snake_case, UPPERCASE, and more instantly.
+</p>
+
+<!-- Input & Controls Card -->
+<div class="card shadow-sm">
+    <div class="card-body">
+
+        <!-- Input Textarea Header & Badges -->
+        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+            <label class="form-label fw-semibold mb-0" for="input">
+                Input Text
+            </label>
+
+            <!-- Live Stats Badges -->
+            <div class="d-flex gap-2">
+                <span id="charCount" class="badge bg-body-tertiary text-body border">
+                    <i class="fa-solid fa-i-cursor me-1 text-primary"></i> 0 Chars
+                </span>
+                <span id="wordCount" class="badge bg-body-tertiary text-body border">
+                    <i class="fa-solid fa-font me-1 text-success"></i> 0 Words
+                </span>
+                <span id="lineCount" class="badge bg-body-tertiary text-body border">
+                    <i class="fa-solid fa-bars me-1 text-info"></i> 0 Lines
+                </span>
+            </div>
+        </div>
+
+        <textarea
+            id="input"
+            class="form-control mb-4"
+            rows="6"
+            placeholder="Type or paste your text here to convert cases..."></textarea>
+
+        <!-- Select Case Action Grid -->
+        <div class="mb-2">
+            <label class="form-label fw-semibold text-body-secondary small text-uppercase tracking-wide">
+                Code & Developer Cases
+            </label>
+            <div class="case-btn-group mb-3">
+                <button class="btn case-btn" onclick="convertCase('camel', this)">
+                    <span>camelCase</span>
+                    <span class="badge-case">aB</span>
+                </button>
+                <button class="btn case-btn" onclick="convertCase('pascal', this)">
+                    <span>PascalCase</span>
+                    <span class="badge-case">AB</span>
+                </button>
+                <button class="btn case-btn" onclick="convertCase('snake', this)">
+                    <span>snake_case</span>
+                    <span class="badge-case">a_b</span>
+                </button>
+                <button class="btn case-btn" onclick="convertCase('kebab', this)">
+                    <span>kebab-case</span>
+                    <span class="badge-case">a-b</span>
+                </button>
+                <button class="btn case-btn" onclick="convertCase('constant', this)">
+                    <span>CONSTANT_CASE</span>
+                    <span class="badge-case">A_B</span>
+                </button>
+            </div>
+
+            <label class="form-label fw-semibold text-body-secondary small text-uppercase tracking-wide">
+                Letter & Text Cases
+            </label>
+            <div class="case-btn-group">
+                <button class="btn case-btn" onclick="convertCase('upper', this)">
+                    <span>UPPERCASE</span>
+                    <span class="badge-case">ABC</span>
+                </button>
+                <button class="btn case-btn" onclick="convertCase('lower', this)">
+                    <span>lowercase</span>
+                    <span class="badge-case">abc</span>
+                </button>
+                <button class="btn case-btn" onclick="convertCase('title', this)">
+                    <span>Title Case</span>
+                    <span class="badge-case">Abc</span>
+                </button>
+                <button class="btn case-btn" onclick="convertCase('sentence', this)">
+                    <span>Sentence case</span>
+                    <span class="badge-case">Abc.</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Output Text Area Card -->
+<div class="card shadow-sm mt-4">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+            <label class="form-label fw-semibold mb-0" for="output">
+                Converted Output
+            </label>
+
+            <!-- Utility Toolbar -->
+            <div class="d-flex gap-2">
+                <button id="copy" class="btn btn-sm btn-primary">
+                    <i class="fa-solid fa-copy me-1"></i> Copy
+                </button>
+                <button id="clear" class="btn btn-sm btn-outline-danger">
+                    <i class="fa-solid fa-trash me-1"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <textarea
+            id="output"
+            class="form-control"
+            rows="6"
+            readonly
+            placeholder="Your converted text will appear here..."></textarea>
+    </div>
+</div>
+
+<!-- SEO Content Section -->
+<section class="mt-5 pt-4 border-top">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="h4 mb-3">Why Use a Text Case Converter?</h2>
+            <p class="text-secondary">
+                Formatting text manually into various naming conventions like <code>camelCase</code>, <code>snake_case</code>, or <code>PascalCase</code> can be tedious and error-prone. This tool allows software engineers, writers, and content creators to instantly convert text between different cases in one click.
+            </p>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <h3 class="h5">Supported Cases Explained</h3>
+            <ul class="text-secondary ps-3">
+                <li><strong>camelCase:</strong> Capitalizes every word except the first, removing spaces (e.g., <code>helloWorld</code>). Popular in JavaScript and Java.</li>
+                <li><strong>PascalCase:</strong> Capitalizes every word including the first, removing spaces (e.g., <code>HelloWorld</code>). Popular in C# and React component naming.</li>
+                <li><strong>snake_case:</strong> Lowercase words joined by underscores (e.g., <code>hello_world</code>). Popular in Python and database schema naming.</li>
+                <li><strong>kebab-case:</strong> Lowercase words joined by dashes (e.g., <code>hello-world</code>). Popular in URLs and CSS classes.</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h3 class="h5">Key Features</h3>
+            <ul class="text-secondary ps-3">
+                <li><strong>Real-time Word & Character Counter:</strong> Track your character, word, and line metrics as you type.</li>
+                <li><strong>100% Privacy Focused:</strong> All conversions occur entirely inside your browser without sending data to any server.</li>
+                <li><strong>One-Click Clipboard Copying:</strong> Quickly copy the converted text for immediate use in code editors or documents.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer id="footer"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="../js/utils.js"></script>
+<script src="../js/tools.js"></script>
+<script src="../js/app.js"></script>
+
+<script>
+
+const input = document.getElementById("input");
+const output = document.getElementById("output");
+const charCount = document.getElementById("charCount");
+const wordCount = document.getElementById("wordCount");
+const lineCount = document.getElementById("lineCount");
+
+// Track active case type
+let lastActiveType = null;
+
+// Update Text Statistics
+function updateStats() {
+    const val = input.value;
+    charCount.innerHTML = `<i class="fa-solid fa-i-cursor me-1 text-primary"></i> ${val.length} Chars`;
+
+    const words = val.trim() ? val.trim().split(/\s+/).length : 0;
+    wordCount.innerHTML = `<i class="fa-solid fa-font me-1 text-success"></i> ${words} Words`;
+
+    const lines = val ? val.split("\n").length : 0;
+    lineCount.innerHTML = `<i class="fa-solid fa-bars me-1 text-info"></i> ${lines} Lines`;
+}
+
+// Helper to extract words clean from camelCase, snake_case, kebab-case, or normal text
+function getWords(str) {
+    if (!str) return [];
+    return str
+        .replace(/([a-z])([A-Z])/g, "$1 $2") // Split camelCase
+        .replace(/[^a-zA-Z0-9]+/g, " ")      // Replace symbols with spaces
+        .trim()
+        .split(/\s+/);
+}
+
+// Convert Case Handler
+function convertCase(type, btnElement) {
+    // Manage active state visuals on buttons
+    document.querySelectorAll('.case-btn').forEach(btn => btn.classList.remove('active'));
+    if (btnElement) {
+        btnElement.classList.add('active');
+    }
+    lastActiveType = type;
+
+    const text = input.value;
+    if (!text) {
+        output.value = "";
+        return;
+    }
+
+    const words = getWords(text);
+    let result = "";
+
+    switch (type) {
+        case "camel":
+            result = words.map((w, i) =>
+                i === 0 ? w.toLowerCase() : w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+            ).join("");
+            break;
+
+        case "pascal":
+            result = words.map(w =>
+                w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+            ).join("");
+            break;
+
+        case "snake":
+            result = words.map(w => w.toLowerCase()).join("_");
+            break;
+
+        case "kebab":
+            result = words.map(w => w.toLowerCase()).join("-");
+            break;
+
+        case "constant":
+            result = words.map(w => w.toUpperCase()).join("_");
+            break;
+
+        case "upper":
+            result = text.toUpperCase();
+            break;
+
+        case "lower":
+            result = text.toLowerCase();
+            break;
+
+        case "title":
+            result = text.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+            break;
+
+        case "sentence":
+            result = text.toLowerCase().replace(/(^\s*\w|[\.\!\?]\s*\w)/g, c => c.toUpperCase());
+            break;
+    }
+
+    output.value = result;
+}
+
+// Live update output if user types while a case is selected
+input.addEventListener("input", () => {
+    updateStats();
+    if (lastActiveType) {
+        const activeBtn = document.querySelector('.case-btn.active');
+        convertCase(lastActiveType, activeBtn);
+    }
+});
+
+// Copy result to clipboard
+document.getElementById("copy").onclick = async () => {
+    if (output.value) {
+        await navigator.clipboard.writeText(output.value);
+        const copyBtn = document.getElementById("copy");
+        const originalText = copyBtn.innerHTML;
+        copyBtn.innerHTML = `<i class="fa-solid fa-check me-1 text-success"></i> Copied!`;
+        setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+        }, 1500);
+    }
+};
+
+// Clear inputs and outputs
+document.getElementById("clear").onclick = () => {
+    input.value = "";
+    output.value = "";
+    lastActiveType = null;
+    document.querySelectorAll('.case-btn').forEach(btn => btn.classList.remove('active'));
+    updateStats();
+};
+
+</script>
+
+</body>
+
+</html>

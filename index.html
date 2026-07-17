@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Ragu Tools - Fast, Private Developer Utilities</title>
+    <meta name="title" content="Ragu Tools - Fast, Private Developer Utilities">
+    <meta name="description" content="Offline-first developer tools for Unix timestamps, JSON formatting, Base64 encoding, text conversion, and password generation.">
+
+    <!-- Bootstrap 5.3 & FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- Custom Theme -->
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+
+<nav id="navbar"></nav>
+
+<!-- Hero Section -->
+<header class="hero-banner">
+    <div class="container text-center text-md-start">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <span class="badge badge-indigo fw-semibold px-3 py-2 rounded-pill mb-3">
+                    <i class="fa-solid fa-shield-halved me-1"></i> 100% Client-Side Privacy
+                </span>
+                <h1 class="display-5 fw-bold mb-3">
+                    Developer Utilities Built for Speed &amp; Privacy
+                </h1>
+                <p class="fs-5 mb-4 text-muted">
+                    Fast, browser-based tools designed for engineers and creators. No tracking, no server logs, fully functional offline.
+                </p>
+                <div class="d-flex gap-3 flex-wrap justify-content-center justify-content-md-start">
+                    <a class="btn btn-indigo" href="tools/index.html">
+                        <i class="fa-solid fa-layer-group me-2"></i>Explore All Tools
+                    </a>
+                    <a class="btn btn-outline-secondary px-4 rounded-3" href="https://github.com/Ragug/ragu-tools" target="_blank" rel="noopener">
+                        <i class="fab fa-github me-2"></i>GitHub Repo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Pillar Cards -->
+<section class="container py-5">
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card card-custom h-100 p-3">
+                <div class="card-body">
+                    <div class="fs-3 icon-indigo mb-3">
+                        <i class="fa-solid fa-user-lock"></i>
+                    </div>
+                    <h3 class="h5 card-title">Zero Server Data Leak</h3>
+                    <p class="small text-muted mb-0">
+                        All operations run directly inside your WebAssembly/JavaScript browser memory space.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card card-custom h-100 p-3">
+                <div class="card-body">
+                    <div class="fs-3 icon-emerald mb-3">
+                        <i class="fa-solid fa-bolt-lightning"></i>
+                    </div>
+                    <h3 class="h5 card-title">Instant Execution</h3>
+                    <p class="small text-muted mb-0">
+                        Zero network latency. Get conversions, encryption, and string outputs immediately.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card card-custom h-100 p-3">
+                <div class="card-body">
+                    <div class="fs-3 icon-amber mb-3">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <h3 class="h5 card-title">Open &amp; Transparent</h3>
+                    <p class="small text-muted mb-0">
+                        Licensed under Apache 2.0. Free for personal, open-source, or enterprise use.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Grid -->
+    <div class="section-header d-flex justify-content-between align-items-end">
+        <div>
+            <span class="section-eyebrow">Directory</span>
+            <h2 class="h4 mb-1">Popular Developer Utilities</h2>
+            <p class="small mb-0">Frequently used offline conversions &amp; generators</p>
+        </div>
+        <a href="tools/index.html" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+            View All <i class="fa-solid fa-arrow-right ms-1"></i>
+        </a>
+    </div>
+
+    <div class="row g-4" id="homeToolList">
+        <!-- JS Dynamic Output -->
+    </div>
+</section>
+
+<footer id="footer"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>Base64 Decode & Image Converter - Ragu Tools</title>
+    <meta name="description" content="Free online Base64 decoder tool. Effortlessly decode Base64 strings, UTF-8 text, and preview or download Base64-encoded images instantly in your browser.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+
+</head>
+
+<body>
+
+<nav id="navbar"></nav>
+
+<main class="container py-5">
+
+<h1 class="mb-3">
+    <i class="fa-solid fa-key text-primary me-2"></i>Base64 Decoder
+</h1>
+
+<p class="text-secondary lead fs-6">
+    Decode Base64 strings back to plain text, or convert Base64 Data URLs back to original images instantly.
+</p>
+
+<!-- Input Card -->
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <label class="form-label fw-semibold mb-0" for="input">
+                Base64 Input
+            </label>
+            <span class="badge bg-light text-dark border">
+                <i class="fa-solid fa-image text-success me-1"></i> Text & Image Data URLs Supported
+            </span>
+        </div>
+
+        <textarea
+            id="input"
+            class="form-control"
+            rows="8"
+            placeholder="Paste your Base64 string or image data URI (e.g. data:image/png;base64,...) here..."></textarea>
+
+        <div class="mt-3 d-flex gap-2 flex-wrap">
+            <button
+                id="decode"
+                class="btn btn-primary">
+                <i class="fa-solid fa-play me-1"></i> Decode
+            </button>
+
+            <button
+                id="copy"
+                class="btn btn-outline-secondary">
+                <i class="fa-solid fa-copy me-1"></i> Copy
+            </button>
+
+            <button
+                id="swap"
+                class="btn btn-outline-info">
+                <i class="fa-solid fa-right-left me-1"></i> Swap
+            </button>
+
+            <button
+                id="clear"
+                class="btn btn-outline-danger">
+                <i class="fa-solid fa-trash me-1"></i> Clear
+            </button>
+
+            <button
+                id="download"
+                class="btn btn-success d-none">
+                <i class="fa-solid fa-download me-1"></i> Download Image
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Image Preview Card (Displayed First On Image Detection) -->
+<div
+    id="imageCard"
+    class="card shadow-sm mt-4 d-none">
+    <div class="card-body text-center">
+        <h5 class="card-title mb-3">
+            <i class="fa-solid fa-circle-check text-success me-1"></i> Image Detected & Decoded
+        </h5>
+        <div class="p-3 bg-light rounded border mb-3 d-inline-block">
+            <img
+                id="preview"
+                class="img-fluid rounded shadow-sm"
+                style="max-height:400px;"
+                alt="Base64 Preview">
+        </div>
+        <div>
+            <button id="downloadInline" class="btn btn-outline-success btn-sm">
+                <i class="fa-solid fa-download me-1"></i> Save Image File
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Decoded Text Output (Foldable if Image Detected) -->
+<div id="outputCard" class="card shadow-sm mt-4">
+    <div class="card-body">
+        <div id="outputHeader" class="d-flex justify-content-between align-items-center mb-2">
+            <label class="form-label fw-semibold mb-0" for="output">
+                Decoded Text Output
+            </label>
+        </div>
+
+        <!-- Collapsible Details Container for Raw Image Data -->
+        <details id="imageOutputFold" class="mb-2 d-none">
+            <summary class="btn btn-sm btn-link text-decoration-none p-0 text-secondary">
+                <i class="fa-solid fa-code me-1"></i> Show Raw Decoded String / Data
+            </summary>
+            <div class="mt-2">
+                <textarea
+                    id="outputFolded"
+                    class="form-control"
+                    rows="4"
+                    readonly></textarea>
+            </div>
+        </details>
+
+        <textarea
+            id="output"
+            class="form-control"
+            rows="8"
+            readonly></textarea>
+    </div>
+</div>
+
+<!-- SEO Content Section -->
+<section class="mt-5 pt-4 border-top">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="h4 mb-3">What is Base64 Decoding?</h2>
+            <p class="text-secondary">
+                Base64 is a binary-to-text encoding scheme that represents binary data in an ASCII string format. It is widely used in web development, email transmission (MIME), and data storage to ensure data remains intact during transfer across systems that only handle plain text.
+            </p>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <h3 class="h5">Key Features</h3>
+            <ul class="text-secondary ps-3">
+                <li><strong>Instant Text Decoding:</strong> Safely convert UTF-8 encoded Base64 back into human-readable text.</li>
+                <li><strong>Image Data URI Support:</strong> Seamlessly detects and renders Base64 image formats (PNG, JPEG, GIF, SVG, WebP).</li>
+                <li><strong>Client-Side Security:</strong> All processing is handled locally in your browser — your data is never uploaded to external servers.</li>
+                <li><strong>Direct File Download:</strong> Export decoded Base64 image strings directly into image files with one click.</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h3 class="h5">How to Decode Base64 Data or Images</h3>
+            <ol class="text-secondary ps-3">
+                <li>Paste your Base64 encoded string or image Data URL into the input field above.</li>
+                <li>Click the <strong>Decode</strong> button (or press <code>Ctrl + Enter</code>).</li>
+                <li>If the input is an image, a live preview will render automatically at the top along with a download option.</li>
+                <li>If the input is standard text, the decoded output will display in the text output box.</li>
+            </ol>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer id="footer"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="../js/utils.js"></script>
+<script src="../js/tools.js"></script>
+<script src="../js/app.js"></script>
+
+<script>
+
+const input = document.getElementById("input");
+const output = document.getElementById("output");
+const outputFolded = document.getElementById("outputFolded");
+
+const preview = document.getElementById("preview");
+const imageCard = document.getElementById("imageCard");
+const outputCard = document.getElementById("outputCard");
+const imageOutputFold = document.getElementById("imageOutputFold");
+
+const download = document.getElementById("download");
+const downloadInline = document.getElementById("downloadInline");
+
+let imageData = "";
+
+function base64ToUtf8(str) {
+    return decodeURIComponent(
+        Array.prototype.map.call(
+            atob(str),
+            c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
+        ).join("")
+    );
+}
+
+function triggerDownload() {
+    if (!imageData) return;
+    const a = document.createElement("a");
+    a.href = imageData;
+    a.download = "decoded-image";
+    a.click();
+}
+
+document.getElementById("decode").onclick = function() {
+
+    output.value = "";
+    outputFolded.value = "";
+
+    // Reset view states
+    imageCard.classList.add("d-none");
+    download.classList.add("d-none");
+    outputCard.classList.remove("d-none");
+    imageOutputFold.classList.add("d-none");
+    output.classList.remove("d-none");
+
+    let text = input.value.trim();
+
+    if (!text) return;
+
+    try {
+        // Handle raw or prefixed base64 image data
+        if (text.startsWith("data:image")) {
+            preview.src = text;
+            imageData = text;
+
+            // Show image card first
+            imageCard.classList.remove("d-none");
+            download.classList.remove("d-none");
+
+            // Collapse text output box into a foldable section
+            output.classList.add("d-none");
+            imageOutputFold.classList.remove("d-none");
+            outputFolded.value = text;
+            return;
+        }
+
+        const decoded = base64ToUtf8(text);
+        output.value = decoded;
+
+    } catch (e) {
+        output.value = "Invalid Base64 input.";
+    }
+};
+
+document.getElementById("copy").onclick = async () => {
+    const valToCopy = output.value || outputFolded.value;
+    if (valToCopy) {
+        await navigator.clipboard.writeText(valToCopy);
+    }
+};
+
+document.getElementById("swap").onclick = function() {
+    const t = input.value;
+    input.value = output.value || outputFolded.value;
+    output.value = t;
+};
+
+document.getElementById("clear").onclick = function() {
+    input.value = "";
+    output.value = "";
+    outputFolded.value = "";
+
+    imageCard.classList.add("d-none");
+    download.classList.add("d-none");
+    outputCard.classList.remove("d-none");
+    imageOutputFold.classList.add("d-none");
+    output.classList.remove("d-none");
+};
+
+download.onclick = triggerDownload;
+downloadInline.onclick = triggerDownload;
+
+input.addEventListener("keydown", e => {
+    if (e.ctrlKey && e.key === "Enter") {
+        document.getElementById("decode").click();
+    }
+});
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>Base64 Encode & Image to Base64 Converter - Ragu Tools</title>
+    <meta name="description" content="Free online Base64 encoder tool. Convert plain text, files, and images into Base64 strings or Data URIs instantly with drag-and-drop or clipboard copy-paste support.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+    <style>/* =========================================================
+       4. DRAG & DROP ZONE & CHIP COMPONENT STYLES
+       ========================================================= */
+
+    /* Drop Zone Base Styling */
+    .drop-zone {
+        border: 2px dashed var(--border-color);
+        border-radius: 10px;
+        padding: 1.75rem 1rem;
+        text-align: center;
+        background-color: rgba(255, 255, 255, 0.02);
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        color: var(--text-muted);
+    }
+
+    .drop-zone:hover {
+        border-color: var(--accent-indigo);
+        background-color: rgba(99, 102, 241, 0.05);
+        color: var(--text-primary);
+    }
+
+    .drop-zone i {
+        color: var(--accent-indigo);
+        transition: transform 0.2s ease;
+    }
+
+    .drop-zone:hover i {
+        transform: translateY(-2px);
+    }
+
+    /* Active Dragover State */
+    .drop-zone.dragover {
+        border-color: var(--accent-emerald) !important;
+        background-color: rgba(16, 185, 129, 0.08) !important;
+        color: var(--text-primary) !important;
+        transform: scale(1.01);
+    }
+
+    .drop-zone.dragover i {
+        color: var(--accent-emerald) !important;
+    }
+
+    /* Badge & Format Chips */
+    .badge-chip {
+        background-color: rgba(99, 102, 241, 0.12);
+        color: var(--accent-indigo-hover);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        padding: 0.35rem 0.65rem;
+        font-weight: 500;
+        font-size: 0.75rem;
+        border-radius: 6px;
+    }
+
+    [data-bs-theme="dark"] .badge-chip {
+        color: #a5b4fc;
+    }
+
+    .format-chip {
+        display: inline-block;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        padding: 0.15rem 0.45rem;
+        margin-right: 0.35rem;
+        margin-bottom: 0.25rem;
+        border-radius: 4px;
+        background-color: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+    }
+
+    /* Metadata Chips inside Image Preview */
+    .meta-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.8rem;
+        padding: 0.3rem 0.65rem;
+        margin: 0.2rem;
+        border-radius: 6px;
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+    }
+
+    .meta-chip strong {
+        color: var(--text-primary);
+    }
+
+    /* Image Preview Container Frame */
+    .preview-frame {
+        background-color: rgba(0, 0, 0, 0.2);
+        border: 1px dashed var(--border-color);
+    }</style>
+</head>
+
+<body>
+
+<nav id="navbar"></nav>
+
+<main class="container py-5">
+
+<h1 class="mb-3">
+    <i class="fa-solid fa-code text-primary me-2"></i>Base64 Encoder
+</h1>
+
+<p class="text-secondary lead fs-6">
+    Convert plain text, documents, or image files into Base64 encoded strings and Data URIs instantly.
+</p>
+
+<!-- Input Card -->
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+            <label class="form-label fw-semibold mb-0" for="input">
+                Input Text or File
+            </label>
+            <span class="badge badge-chip">
+                <i class="fa-solid fa-paste me-1"></i> Paste Image (Ctrl+V) & File Upload Supported
+            </span>
+        </div>
+
+        <textarea
+            id="input"
+            class="form-control mb-3"
+            rows="6"
+            placeholder="Type or paste your text here, or paste an image directly from your clipboard (Ctrl+V)..."></textarea>
+
+        <!-- Drag & Drop / File Upload Area -->
+        <div id="dropZone" class="drop-zone mb-2">
+            <i class="fa-solid fa-cloud-arrow-up fa-2x mb-2 d-block"></i>
+            <p class="mb-2 fw-semibold">Drag & Drop an image or file here, or click to browse</p>
+            <input type="file" id="fileInput" class="d-none">
+        </div>
+
+        <div class="mb-3">
+            <span class="format-chip">PNG</span><span class="format-chip">JPG</span><span class="format-chip">WEBP</span><span class="format-chip">SVG</span><span class="format-chip">GIF</span><span class="format-chip">TXT</span><span class="format-chip">PDF</span>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+            <button
+                id="encode"
+                class="btn btn-primary">
+                <i class="fa-solid fa-play me-1"></i> Encode Text
+            </button>
+
+            <button
+                id="copy"
+                class="btn btn-outline-secondary">
+                <i class="fa-solid fa-copy me-1"></i> Copy Base64
+            </button>
+
+            <button
+                id="swap"
+                class="btn btn-outline-info">
+                <i class="fa-solid fa-right-left me-1"></i> Swap
+            </button>
+
+            <button
+                id="clear"
+                class="btn btn-outline-danger">
+                <i class="fa-solid fa-trash me-1"></i> Clear
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Image Preview Card (Displayed First On Image Detection/Upload) -->
+<div
+    id="imageCard"
+    class="card shadow-sm mt-4 d-none">
+    <div class="card-body text-center">
+        <h5 class="card-title mb-3">
+            <i class="fa-solid fa-circle-check icon-emerald me-1"></i> Image Encoded to Base64
+        </h5>
+        <div class="p-3 preview-frame rounded mb-3 d-inline-block">
+            <img
+                id="preview"
+                class="img-fluid rounded"
+                style="max-height:300px;"
+                alt="Base64 Image Preview">
+        </div>
+        <div id="imageMeta" class="mb-3"></div>
+        <div class="d-flex gap-2 justify-content-center flex-wrap">
+            <button id="copyDataUri" class="btn btn-outline-primary btn-sm">
+                <i class="fa-solid fa-copy me-1"></i> Copy Full Data URI
+            </button>
+            <button id="copyRawBase64" class="btn btn-outline-secondary btn-sm">
+                <i class="fa-solid fa-code me-1"></i> Copy Raw Base64 Only
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Encoded Text Output (Foldable if Image Encoded) -->
+<div id="outputCard" class="card shadow-sm mt-4">
+    <div class="card-body">
+        <div id="outputHeader" class="d-flex justify-content-between align-items-center mb-2">
+            <label class="form-label fw-semibold mb-0" for="output">
+                Encoded Base64 Output
+            </label>
+        </div>
+
+        <!-- Collapsible Details Container for Raw Image Data -->
+        <details id="imageOutputFold" class="mb-2 d-none">
+            <summary class="btn btn-sm btn-link text-decoration-none p-0 text-secondary">
+                <i class="fa-solid fa-code me-1"></i> Show Raw Base64 Encoded Output
+            </summary>
+            <div class="mt-2">
+                <textarea
+                    id="outputFolded"
+                    class="form-control"
+                    rows="6"
+                    readonly></textarea>
+            </div>
+        </details>
+
+        <textarea
+            id="output"
+            class="form-control"
+            rows="8"
+            readonly></textarea>
+    </div>
+</div>
+
+<!-- SEO Content Section -->
+<section class="mt-5 pt-4 border-top">
+    <div class="row">
+        <div class="col-md-12">
+            <h2 class="h4 mb-3">What is Base64 Encoding?</h2>
+            <p class="text-secondary">
+                Base64 encoding converts binary data into a sequence of 64 printable ASCII characters. It is commonly used when transmitting binary data (like images, fonts, or files) over media designed to deal primarily with textual data, such as HTML, CSS, JSON, or email systems.
+            </p>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <h3 class="h5">Key Features</h3>
+            <ul class="text-secondary ps-3">
+                <li><strong>Clipboard Image Support:</strong> Copy any image (e.g., via screenshot or browser) and press <code>Ctrl + V</code> to instantly encode it.</li>
+                <li><strong>Drag & Drop File Upload:</strong> Upload any file or image directly from your local drive to get its Base64 string.</li>
+                <li><strong>UTF-8 Safe Encoding:</strong> Supports full unicode encoding for international characters and emojis.</li>
+                <li><strong>100% Client-Side Privacy:</strong> File encoding runs entirely inside your browser. No files are uploaded to any server.</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h3 class="h5">How to Encode Text or Images to Base64</h3>
+            <ol class="text-secondary ps-3">
+                <li>Type text in the input box, drop a file, or paste an image directly using <code>Ctrl + V</code>.</li>
+                <li>If text was entered, click <strong>Encode Text</strong> (or press <code>Ctrl + Enter</code>).</li>
+                <li>If an image was uploaded or pasted, an instant live preview will pop up along with the Base64 Data URI.</li>
+                <li>Use the copy buttons to get either the raw Base64 string or the formatted HTML/CSS Data URI.</li>
+            </ol>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer id="footer"></footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="../js/utils.js"></script>
+<script src="../js/tools.js"></script>
+<script src="../js/app.js"></script>
+
+<script>
+
+const input = document.getElementById("input");
+const output = document.getElementById("output");
+const outputFolded = document.getElementById("outputFolded");
+
+const dropZone = document.getElementById("dropZone");
+const fileInput = document.getElementById("fileInput");
+
+const preview = document.getElementById("preview");
+const imageCard = document.getElementById("imageCard");
+const outputCard = document.getElementById("outputCard");
+const imageOutputFold = document.getElementById("imageOutputFold");
+const imageMeta = document.getElementById("imageMeta");
+
+const copyDataUriBtn = document.getElementById("copyDataUri");
+const copyRawBase64Btn = document.getElementById("copyRawBase64");
+
+let fullDataUri = "";
+let rawBase64Str = "";
+
+// UTF-8 friendly text encoding
+function utf8ToBase64(str) {
+    return btoa(
+        encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (match, p1) =>
+            String.fromCharCode("0x" + p1)
+        )
+    );
+}
+
+// Process file conversion
+function processFile(file) {
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        fullDataUri = e.target.result;
+        rawBase64Str = fullDataUri.split(",")[1] || "";
+
+        if (file.type.startsWith("image/")) {
+            preview.src = fullDataUri;
+            imageMeta.innerHTML = `
+                <span class="meta-chip"><strong>File</strong>${file.name || "Clipboard Image"}</span>
+                <span class="meta-chip"><strong>Size</strong>${(file.size / 1024).toFixed(2)} KB</span>
+                <span class="meta-chip"><strong>Type</strong>${file.type}</span>
+            `;
+
+            // Show image card first
+            imageCard.classList.remove("d-none");
+
+            // Fold raw text output
+            output.classList.add("d-none");
+            imageOutputFold.classList.remove("d-none");
+            outputFolded.value = fullDataUri;
+        } else {
+            // Non-image file output
+            imageCard.classList.add("d-none");
+            output.classList.remove("d-none");
+            imageOutputFold.classList.add("d-none");
+            output.value = fullDataUri;
+        }
+    };
+
+    reader.readAsDataURL(file);
+}
+
+// Encode text manually
+document.getElementById("encode").onclick = function() {
+    resetImageState();
+    let text = input.value.trim();
+    if (!text) return;
+
+    try {
+        const encoded = utf8ToBase64(text);
+        output.value = encoded;
+    } catch {
+        output.value = "Error encoding text.";
+    }
+};
+
+// Clipboard paste handler (Ctrl + V for images)
+document.addEventListener("paste", e => {
+    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+    for (let item of items) {
+        if (item.kind === "file" && item.type.startsWith("image/")) {
+            e.preventDefault();
+            const blob = item.getAsFile();
+            processFile(blob);
+            break;
+        }
+    }
+});
+
+// Drag and drop events
+dropZone.onclick = () => fileInput.click();
+
+fileInput.onchange = e => {
+    if (e.target.files.length) {
+        processFile(e.target.files[0]);
+    }
+};
+
+dropZone.addEventListener("dragover", e => {
+    e.preventDefault();
+    dropZone.classList.add("dragover");
+});
+
+dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("dragover");
+});
+
+dropZone.addEventListener("drop", e => {
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
+    if (e.dataTransfer.files.length) {
+        processFile(e.dataTransfer.files[0]);
+    }
+});
+
+// Copy button handlers
+document.getElementById("copy").onclick = async () => {
+    const valToCopy = output.value || outputFolded.value;
+    if (valToCopy) {
+        await navigator.clipboard.writeText(valToCopy);
+    }
+};
+
+copyDataUriBtn.onclick = async () => {
+    if (fullDataUri) await navigator.clipboard.writeText(fullDataUri);
+};
+
+copyRawBase64Btn.onclick = async () => {
+    if (rawBase64Str) await navigator.clipboard.writeText(rawBase64Str);
+};
+
+document.getElementById("swap").onclick = function() {
+    const t = input.value;
+    input.value = output.value || outputFolded.value;
+    output.value = t;
+};
+
+document.getElementById("clear").onclick = function() {
+    input.value = "";
+    output.value = "";
+    outputFolded.value = "";
+    fileInput.value = "";
+    resetImageState();
+};
+
+function resetImageState() {
+    imageCard.classList.add("d-none");
+    outputCard.classList.remove("d-none");
+    imageOutputFold.classList.add("d-none");
+    output.classList.remove("d-none");
+    fullDataUri = "";
+    rawBase64Str = "";
+}
+
+input.addEventListener("keydown", e => {
+    if (e.ctrlKey && e.key === "Enter") {
+        document.getElementById("encode").click();
+    }
+});
+
+</script>
+
+</body>
+
+</html>

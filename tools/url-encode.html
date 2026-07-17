@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>URL Encoder & Decoder Online - Free Query String Encoding Tool | Ragu Tools</title>
+
+    <meta name="description" content="Free online URL encoder and decoder. Instantly encode query parameter values or full URLs to percent-encoded (URL-safe) text, entirely in your browser. No data ever leaves your device.">
+    <meta name="keywords" content="url encoder, url decoder, percent encoding, uri encode, encodeURIComponent, query string encoder, url escape tool">
+    <meta name="author" content="Ragu Tools">
+    <link rel="canonical" href="https://ragutools.com/tools/url-encode.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="URL Encoder & Decoder - Free Online Tool">
+    <meta property="og:description" content="Smart URL encoder that only encodes query parameter values when given a full URL, or the entire string otherwise. 100% client-side, no tracking.">
+    <meta property="og:url" content="https://ragutools.com/tools/url-encode.html">
+    <meta property="og:site_name" content="Ragu Tools">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="URL Encoder & Decoder - Free Online Tool">
+    <meta name="twitter:description" content="Encode or decode URLs and query strings instantly in your browser. Private, offline-capable, and free.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <!-- Structured data: helps search engines understand this is a free tool -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "URL Encoder & Decoder",
+      "url": "https://ragutools.com/tools/url-encode.html",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any (runs in browser)",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "Free browser-based tool to URL-encode or decode text, full URLs, and query parameter values using percent-encoding."
+    }
+    </script>
+
+</head>
+
+<body>
+
+    <nav id="navbar"></nav>
+
+    <main class="container py-5">
+
+        <div class="mb-4">
+
+            <h1>
+
+                <i class="fa-solid fa-link text-primary"></i>
+
+                URL Encoder &amp; Decoder
+
+            </h1>
+
+            <p class="text-secondary">
+
+                Smart URL encoder. If the input is a valid URL, only query parameter values are encoded.
+                Otherwise, the entire input is encoded.
+
+            </p>
+
+        </div>
+
+        <div class="card shadow-sm">
+
+            <div class="card-body">
+
+                <label class="form-label fw-semibold" for="input">
+
+                    Input
+
+                </label>
+
+                <textarea id="input"
+                    class="form-control"
+                    rows="8"
+                    placeholder="Paste text or URL here..."
+                    aria-label="Text or URL to encode"></textarea>
+
+                <div class="form-check mt-3">
+
+                    <input class="form-check-input"
+                        type="checkbox"
+                        id="encodeAll">
+
+                    <label class="form-check-label" for="encodeAll">
+
+                        Encode entire input (ignore URL detection)
+
+                    </label>
+
+                </div>
+
+                <div class="mt-4 d-flex gap-2 flex-wrap">
+
+                    <button id="encode" class="btn btn-primary">
+
+                        <i class="fa-solid fa-play"></i>
+
+                        Encode
+
+                    </button>
+
+                    <button id="copy" class="btn btn-outline-secondary">
+
+                        <i class="fa-solid fa-copy"></i>
+
+                        Copy
+
+                    </button>
+
+                    <button id="swap" class="btn btn-outline-info">
+
+                        <i class="fa-solid fa-right-left"></i>
+
+                        Swap
+
+                    </button>
+
+                    <button id="clear" class="btn btn-outline-danger">
+
+                        <i class="fa-solid fa-trash"></i>
+
+                        Clear
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="card shadow-sm mt-4">
+
+            <div class="card-body">
+
+                <label class="form-label fw-semibold" for="output">
+
+                    Output
+
+                </label>
+
+                <textarea id="output"
+                    class="form-control"
+                    rows="8"
+                    readonly
+                    aria-label="Encoded output"></textarea>
+
+            </div>
+
+        </div>
+
+        <!-- On-page SEO content: explains what the tool does and why, in plain text -->
+        <section class="mt-5">
+
+            <h2 class="h4">What is URL encoding?</h2>
+            <p class="text-secondary">
+                URL encoding, also called percent-encoding, converts characters that aren't allowed in a URL
+                — spaces, ampersands, slashes, unicode characters, and more — into a
+                <code>%</code>-prefixed hexadecimal format so the URL can be transmitted correctly over the web.
+                For example, a space becomes <code>%20</code> and an ampersand becomes <code>%26</code>. This
+                matters most inside query string values, where an un-encoded character can break the URL or
+                get parsed as a separate parameter.
+            </p>
+
+            <h2 class="h4 mt-4">How this tool works</h2>
+            <p class="text-secondary">
+                Paste any text or full URL into the input box above and click <strong>Encode</strong>. If the
+                input is recognized as a valid URL, only the values of its query parameters are encoded and the
+                rest of the URL (scheme, host, path) is left readable. If the input isn't a URL, the entire
+                string is percent-encoded instead. Check <strong>Encode entire input</strong> to force
+                full encoding regardless of URL detection. Use <strong>Swap</strong> to flip the input and
+                output, which is a quick way to decode a previously encoded string.
+            </p>
+
+            <h2 class="h4 mt-4">Common use cases</h2>
+            <ul class="text-secondary">
+                <li>Preparing query parameter values (search terms, redirect URLs, tokens) for safe use in a link</li>
+                <li>Decoding a percent-encoded URL to inspect its real value during debugging</li>
+                <li>Escaping special characters before building an API request URL</li>
+                <li>Sanitizing user-generated text before appending it to a URL</li>
+            </ul>
+
+            <p class="small text-muted mt-4">
+                This tool runs entirely in your browser using the native <code>encodeURIComponent</code> and
+                <code>URL</code> APIs. Nothing you type is sent to a server or stored anywhere.
+            </p>
+
+        </section>
+
+    </main>
+
+    <footer id="footer"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/tools.js"></script>
+    <script src="../js/app.js"></script>
+
+    <script>
+
+        const input = document.getElementById("input");
+        const output = document.getElementById("output");
+        const encodeAll = document.getElementById("encodeAll");
+
+        function encodeSmart(text) {
+
+            try {
+
+                const url = new URL(text);
+
+                // Encode each parameter value exactly once
+                for (const key of [...url.searchParams.keys()]) {
+
+                    const values = url.searchParams.getAll(key);
+
+                    url.searchParams.delete(key);
+
+                    values.forEach(value => {
+
+                        try {
+                            value = decodeURIComponent(value);
+                        } catch { }
+
+                        url.searchParams.append(
+                            key,
+                            encodeURIComponent(value)
+                        );
+
+                    });
+
+                }
+
+                return url.toString();
+
+            } catch {
+
+                return encodeURIComponent(text);
+
+            }
+
+        }
+
+        document.getElementById("encode").addEventListener("click", () => {
+
+            const text = input.value.trim();
+
+            if (!text) {
+
+                output.value = "";
+
+                return;
+
+            }
+
+            if (encodeAll.checked) {
+
+                output.value = encodeURIComponent(text);
+
+                return;
+
+            }
+
+            output.value = encodeSmart(text);
+
+        });
+
+        document.getElementById("copy").addEventListener("click", async () => {
+
+            if (!output.value) return;
+
+            await navigator.clipboard.writeText(output.value);
+
+        });
+
+        document.getElementById("swap").addEventListener("click", () => {
+
+            const tmp = input.value;
+
+            input.value = output.value;
+
+            output.value = tmp;
+
+        });
+
+        document.getElementById("clear").addEventListener("click", () => {
+
+            input.value = "";
+            output.value = "";
+            input.focus();
+
+        });
+
+        input.addEventListener("keydown", (e) => {
+
+            if (e.ctrlKey && e.key === "Enter") {
+
+                document.getElementById("encode").click();
+
+            }
+
+        });
+
+    </script>
+
+</body>
+
+</html>

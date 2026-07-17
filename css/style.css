@@ -1,0 +1,164 @@
+/* =========================================================
+   RAGU TOOLS - High-Contrast Dark & Light Theme System
+   ========================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* --- Global Reset & Base Typography --- */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* =========================================================
+   1. LIGHT THEME CONFIGURATION
+   ========================================================= */
+[data-bs-theme="light"] {
+    --bg-main: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-hero: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 100%);
+
+    /* Text Colors */
+    --text-primary: #0f172a;
+    --text-muted: #475569;
+    --border-color: #cbd5e1;
+
+    /* Brand Accent Colors */
+    --accent-indigo: #4338ca;
+    --accent-indigo-hover: #3730a3;
+    --accent-emerald: #047857;
+    --accent-amber: #b45309;
+
+    /* Shadow Utilities */
+    --card-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05);
+    --card-shadow-hover: 0 10px 15px -3px rgba(67, 56, 202, 0.12);
+}
+
+/* =========================================================
+   2. DARK THEME CONFIGURATION (HIGH CONTRAST AAA)
+   ========================================================= */
+[data-bs-theme="dark"] {
+    --bg-main: #0b0f19;          /* Deep dark slate background */
+    --bg-surface: #151c2c;       /* Distinct elevated card background */
+    --bg-hero: linear-gradient(180deg, #151c2c 0%, #0b0f19 100%);
+
+    /* Crisp High-Contrast Text Colors */
+    --text-primary: #ffffff;      /* Pure White for Headings & Primary Text */
+    --text-muted: #cbd5e1;        /* Bright Slate Gray for Secondary Text (High Contrast) */
+    --border-color: #2d3748;      /* Strong Surface Border */
+
+    /* Vivid Accent Colors */
+    --accent-indigo: #6366f1;    /* Electric Indigo */
+    --accent-indigo-hover: #818cf8;
+    --accent-emerald: #10b981;   /* Bright Emerald */
+    --accent-amber: #f59e0b;     /* Vivid Amber */
+
+    /* Shadows */
+    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --card-shadow-hover: 0 8px 24px rgba(99, 102, 241, 0.25);
+
+    /* --- Override Bootstrap Color Tokens in Dark Mode --- */
+    --bs-body-bg: var(--bg-main);
+    --bs-body-color: var(--text-primary);
+    --bs-secondary-color: var(--text-muted);
+    --bs-tertiary-color: var(--text-muted);
+    --bs-emphasis-color: #ffffff;
+    --bs-border-color: var(--border-color);
+}
+
+/* =========================================================
+   3. GLOBAL STYLES & OVERRIDES
+   ========================================================= */
+
+/* Body & Generic Text Safety */
+body {
+    background-color: var(--bg-main) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Enforce Primary Headings Contrast */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6,
+.card-title, .navbar-brand {
+    color: var(--text-primary) !important;
+    font-weight: 700;
+}
+
+/* Fix washed out Bootstrap text classes in Dark Mode */
+.text-muted,
+.text-body-secondary,
+.text-secondary,
+p.card-text {
+    color: var(--text-muted) !important;
+}
+
+/* Hero Banner Layout */
+.hero-banner {
+    background: var(--bg-hero);
+    border-bottom: 1px solid var(--border-color);
+    padding: 4.5rem 0;
+}
+
+/* High Contrast Card Containers */
+.card-custom,
+.card {
+    background-color: var(--bg-surface) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: var(--card-shadow);
+    border-radius: 12px;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-custom:hover,
+.card:hover {
+    border-color: var(--accent-indigo) !important;
+    transform: translateY(-3px);
+    box-shadow: var(--card-shadow-hover);
+}
+
+/* Primary Action Buttons */
+.btn-indigo {
+    background-color: var(--accent-indigo) !important;
+    border-color: var(--accent-indigo) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.65rem 1.4rem;
+}
+
+.btn-indigo:hover {
+    background-color: var(--accent-indigo-hover) !important;
+    border-color: var(--accent-indigo-hover) !important;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+}
+
+/* High-Contrast Badges */
+.badge-indigo {
+    background-color: rgba(99, 102, 241, 0.2) !important;
+    color: #a5b4fc !important;
+    border: 1px solid rgba(99, 102, 241, 0.4);
+}
+
+/* High-Contrast Category Badges inside Cards */
+.badge-category {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-color) !important;
+}
+
+/* Utility Icon Colors */
+.icon-indigo { color: var(--accent-indigo) !important; }
+.icon-emerald { color: var(--accent-emerald) !important; }
+.icon-amber { color: var(--accent-amber) !important; }
+
+/* Form Control High Contrast Fixes */
+.form-control, .form-select {
+    background-color: var(--bg-surface) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--accent-indigo) !important;
+    box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.25) !important;
+}
