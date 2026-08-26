@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>Text Hash Generator - MD5, SHA-1, SHA-256, SHA-512 - Ragu Tools</title>
+    <meta name="description"
+        content="Free online text hash generator. Instantly generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text, right in your browser.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .output-value {
+            word-break: break-all;
+        }
+
+        /* Light Mode Defaults */
+        [data-bs-theme="light"] .bg-output-box {
+            background-color: #f8f9fa !important;
+            border-color: #dee2e6 !important;
+        }
+
+        /* High-Contrast Dark Mode Overrides */
+        [data-bs-theme="dark"] .bg-output-box {
+            background-color: #1a1d20 !important;
+            border-color: #343a40 !important;
+        }
+
+        [data-bs-theme="dark"] .text-primary {
+            color: #6ea8fe !important;
+            /* High-contrast accessible blue */
+        }
+
+        [data-bs-theme="dark"] .text-info {
+            color: #6edff6 !important;
+            /* High-contrast bright cyan */
+        }
+
+        [data-bs-theme="dark"] .btn-outline-info {
+            color: #6edff6;
+            border-color: #6edff6;
+        }
+
+        [data-bs-theme="dark"] .btn-outline-info:hover {
+            background-color: #0dcaf0;
+            border-color: #0dcaf0;
+            color: #000000;
+        }
+
+        .hash-row .algo-label {
+            width: 90px;
+            flex-shrink: 0;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--bs-info);
+            border-color: var(--bs-info);
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <nav id="navbar"></nav>
+
+    <main class="container py-5">
+
+        <h1 class="mb-3">
+            <i class="fa-solid fa-fingerprint text-info me-2"></i>Text Hash Generator
+        </h1>
+
+        <p class="text-secondary lead fs-6">
+            Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text. Everything runs locally in your
+            browser — your text is never sent anywhere.
+        </p>
+
+        <div class="row g-4">
+            <!-- Input Section -->
+            <div class="col-lg-5">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5 card-title mb-3">
+                            <i class="fa-solid fa-keyboard text-success me-2"></i>Input Text
+                        </h2>
+
+                        <div class="mb-3">
+                            <label for="hashInput" class="form-label fw-semibold text-body">
+                                Enter text to hash
+                            </label>
+                            <textarea id="hashInput" class="form-control font-monospace" rows="8"
+                                placeholder="Type or paste text here..."></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="uppercaseToggle">
+                                <label class="form-check-label text-body-secondary small" for="uppercaseToggle">
+                                    Uppercase output
+                                </label>
+                            </div>
+                            <button id="btnClear" class="btn btn-sm btn-outline-secondary">
+                                <i class="fa-solid fa-eraser me-1"></i> Clear
+                            </button>
+                        </div>
+
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input algo-toggle" type="checkbox" value="MD5" id="algoMD5"
+                                        checked>
+                                    <label class="form-check-label text-body" for="algoMD5">MD5</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input algo-toggle" type="checkbox" value="SHA-1"
+                                        id="algoSHA1" checked>
+                                    <label class="form-check-label text-body" for="algoSHA1">SHA-1</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input algo-toggle" type="checkbox" value="SHA-256"
+                                        id="algoSHA256" checked>
+                                    <label class="form-check-label text-body" for="algoSHA256">SHA-256</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input algo-toggle" type="checkbox" value="SHA-384"
+                                        id="algoSHA384">
+                                    <label class="form-check-label text-body" for="algoSHA384">SHA-384</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-check">
+                                    <input class="form-check-input algo-toggle" type="checkbox" value="SHA-512"
+                                        id="algoSHA512">
+                                    <label class="form-check-label text-body" for="algoSHA512">SHA-512</label>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Section -->
+            <div class="col-lg-7">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5 card-title mb-3">
+                            <i class="fa-solid fa-hashtag text-info me-2"></i>Hash Output
+                        </h2>
+
+                        <div id="hashOutputs" class="d-flex flex-column gap-3">
+                            <!-- Hash rows are injected here by JS -->
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEO Content Section -->
+        <section class="mt-5 pt-4 border-top">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="h4 mb-3">What is a Hash Function?</h2>
+                    <p class="text-secondary">
+                        A cryptographic hash function takes an input of any size and produces a fixed-length string of
+                        characters, called a digest, that uniquely represents that input. Even a single character change
+                        in the input produces a completely different hash. Hashes are commonly used to verify file
+                        integrity, store password fingerprints, and detect duplicate content.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h3 class="h5">Which Algorithm Should I Use?</h3>
+                    <ul class="text-secondary ps-3">
+                        <li><strong>MD5:</strong> Fast and widely supported, but not collision-resistant. Fine for
+                            checksums, unsafe for security.</li>
+                        <li><strong>SHA-1:</strong> Deprecated for security purposes due to known collision attacks.
+                        </li>
+                        <li><strong>SHA-256 / SHA-512:</strong> Part of the SHA-2 family, currently considered secure
+                            and widely used for passwords, signatures, and blockchains.</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h5">Developer Quick Reference</h3>
+                    <ul class="text-secondary ps-3">
+                        <li><strong>JavaScript:</strong> <code>crypto.subtle.digest('SHA-256', data)</code></li>
+                        <li><strong>Python:</strong> <code>hashlib.sha256(data).hexdigest()</code></li>
+                        <li><strong>Bash / Linux:</strong> <code>echo -n "text" | sha256sum</code></li>
+                        <li><strong>PHP:</strong> <code>hash('sha256', $text)</code></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer id="footer"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/tools.js"></script>
+    <script src="../js/app.js"></script>
+
+    <script>
+
+        /* =========================================================
+           Minimal MD5 implementation (public-domain style, self-contained)
+           Web Crypto's SubtleCrypto does not support MD5, so it is
+           implemented here purely in JS. Everything stays client-side.
+           ========================================================= */
+        function md5(inputString) {
+            function rotateLeft(x, c) { return (x << c) | (x >>> (32 - c)); }
+            function addUnsigned(x, y) {
+                const x8 = x & 0x80000000, y8 = y & 0x80000000;
+                const x4 = x & 0x40000000, y4 = y & 0x40000000;
+                const result = (x & 0x3fffffff) + (y & 0x3fffffff);
+                if (x4 & y4) return result ^ 0x80000000 ^ x8 ^ y8;
+                if (x4 | y4) {
+                    if (result & 0x40000000) return result ^ 0xc0000000 ^ x8 ^ y8;
+                    return result ^ 0x40000000 ^ x8 ^ y8;
+                }
+                return result ^ x8 ^ y8;
+            }
+            function F(x, y, z) { return (x & y) | (~x & z); }
+            function G(x, y, z) { return (x & z) | (y & ~z); }
+            function H(x, y, z) { return x ^ y ^ z; }
+            function I(x, y, z) { return y ^ (x | ~z); }
+            function FF(a, b, c, d, x, s, ac) {
+                a = addUnsigned(a, addUnsigned(addUnsigned(F(b, c, d), x), ac));
+                return addUnsigned(rotateLeft(a, s), b);
+            }
+            function GG(a, b, c, d, x, s, ac) {
+                a = addUnsigned(a, addUnsigned(addUnsigned(G(b, c, d), x), ac));
+                return addUnsigned(rotateLeft(a, s), b);
+            }
+            function HH(a, b, c, d, x, s, ac) {
+                a = addUnsigned(a, addUnsigned(addUnsigned(H(b, c, d), x), ac));
+                return addUnsigned(rotateLeft(a, s), b);
+            }
+            function II(a, b, c, d, x, s, ac) {
+                a = addUnsigned(a, addUnsigned(addUnsigned(I(b, c, d), x), ac));
+                return addUnsigned(rotateLeft(a, s), b);
+            }
+            function convertToWordArray(str) {
+                let wordCount;
+                const messageLength = str.length;
+                const numberOfWordsTemp1 = messageLength + 8;
+                const numberOfWordsTemp2 = (numberOfWordsTemp1 - (numberOfWordsTemp1 % 64)) / 64;
+                const numberOfWords = (numberOfWordsTemp2 + 1) * 16;
+                const wordArray = new Array(numberOfWords - 1);
+                let bytePosition = 0, byteCount = 0;
+                while (byteCount < messageLength) {
+                    wordCount = (byteCount - (byteCount % 4)) / 4;
+                    bytePosition = (byteCount % 4) * 8;
+                    wordArray[wordCount] = wordArray[wordCount] | (str.charCodeAt(byteCount) << bytePosition);
+                    byteCount++;
+                }
+                wordCount = (byteCount - (byteCount % 4)) / 4;
+                bytePosition = (byteCount % 4) * 8;
+                wordArray[wordCount] = wordArray[wordCount] | (0x80 << bytePosition);
+                wordArray[numberOfWords - 2] = messageLength << 3;
+                wordArray[numberOfWords - 1] = messageLength >>> 29;
+                return wordArray;
+            }
+            function wordToHex(value) {
+                let hex = "", byte, count;
+                for (count = 0; count <= 3; count++) {
+                    byte = (value >>> (count * 8)) & 255;
+                    hex += ("0" + byte.toString(16)).slice(-2);
+                }
+                return hex;
+            }
+            function utf8Encode(str) { return unescape(encodeURIComponent(str)); }
+
+            let x = [];
+            let k, AA, BB, CC, DD, a, b, c, d;
+            const S11 = 7, S12 = 12, S13 = 17, S14 = 22;
+            const S21 = 5, S22 = 9, S23 = 14, S24 = 20;
+            const S31 = 4, S32 = 11, S33 = 16, S34 = 23;
+            const S41 = 6, S42 = 10, S43 = 15, S44 = 21;
+
+            const str = utf8Encode(inputString);
+            x = convertToWordArray(str);
+            a = 0x67452301; b = 0xefcdab89; c = 0x98badcfe; d = 0x10325476;
+
+            for (k = 0; k < x.length; k += 16) {
+                AA = a; BB = b; CC = c; DD = d;
+                a = FF(a, b, c, d, x[k + 0], S11, 0xd76aa478);
+                d = FF(d, a, b, c, x[k + 1], S12, 0xe8c7b756);
+                c = FF(c, d, a, b, x[k + 2], S13, 0x242070db);
+                b = FF(b, c, d, a, x[k + 3], S14, 0xc1bdceee);
+                a = FF(a, b, c, d, x[k + 4], S11, 0xf57c0faf);
+                d = FF(d, a, b, c, x[k + 5], S12, 0x4787c62a);
+                c = FF(c, d, a, b, x[k + 6], S13, 0xa8304613);
+                b = FF(b, c, d, a, x[k + 7], S14, 0xfd469501);
+                a = FF(a, b, c, d, x[k + 8], S11, 0x698098d8);
+                d = FF(d, a, b, c, x[k + 9], S12, 0x8b44f7af);
+                c = FF(c, d, a, b, x[k + 10], S13, 0xffff5bb1);
+                b = FF(b, c, d, a, x[k + 11], S14, 0x895cd7be);
+                a = FF(a, b, c, d, x[k + 12], S11, 0x6b901122);
+                d = FF(d, a, b, c, x[k + 13], S12, 0xfd987193);
+                c = FF(c, d, a, b, x[k + 14], S13, 0xa679438e);
+                b = FF(b, c, d, a, x[k + 15], S14, 0x49b40821);
+                a = GG(a, b, c, d, x[k + 1], S21, 0xf61e2562);
+                d = GG(d, a, b, c, x[k + 6], S22, 0xc040b340);
+                c = GG(c, d, a, b, x[k + 11], S23, 0x265e5a51);
+                b = GG(b, c, d, a, x[k + 0], S24, 0xe9b6c7aa);
+                a = GG(a, b, c, d, x[k + 5], S21, 0xd62f105d);
+                d = GG(d, a, b, c, x[k + 10], S22, 0x2441453);
+                c = GG(c, d, a, b, x[k + 15], S23, 0xd8a1e681);
+                b = GG(b, c, d, a, x[k + 4], S24, 0xe7d3fbc8);
+                a = GG(a, b, c, d, x[k + 9], S21, 0x21e1cde6);
+                d = GG(d, a, b, c, x[k + 14], S22, 0xc33707d6);
+                c = GG(c, d, a, b, x[k + 3], S23, 0xf4d50d87);
+                b = GG(b, c, d, a, x[k + 8], S24, 0x455a14ed);
+                a = GG(a, b, c, d, x[k + 13], S21, 0xa9e3e905);
+                d = GG(d, a, b, c, x[k + 2], S22, 0xfcefa3f8);
+                c = GG(c, d, a, b, x[k + 7], S23, 0x676f02d9);
+                b = GG(b, c, d, a, x[k + 12], S24, 0x8d2a4c8a);
+                a = HH(a, b, c, d, x[k + 5], S31, 0xfffa3942);
+                d = HH(d, a, b, c, x[k + 8], S32, 0x8771f681);
+                c = HH(c, d, a, b, x[k + 11], S33, 0x6d9d6122);
+                b = HH(b, c, d, a, x[k + 14], S34, 0xfde5380c);
+                a = HH(a, b, c, d, x[k + 1], S31, 0xa4beea44);
+                d = HH(d, a, b, c, x[k + 4], S32, 0x4bdecfa9);
+                c = HH(c, d, a, b, x[k + 7], S33, 0xf6bb4b60);
+                b = HH(b, c, d, a, x[k + 10], S34, 0xbebfbc70);
+                a = HH(a, b, c, d, x[k + 13], S31, 0x289b7ec6);
+                d = HH(d, a, b, c, x[k + 0], S32, 0xeaa127fa);
+                c = HH(c, d, a, b, x[k + 3], S33, 0xd4ef3085);
+                b = HH(b, c, d, a, x[k + 6], S34, 0x4881d05);
+                a = HH(a, b, c, d, x[k + 9], S31, 0xd9d4d039);
+                d = HH(d, a, b, c, x[k + 12], S32, 0xe6db99e5);
+                c = HH(c, d, a, b, x[k + 15], S33, 0x1fa27cf8);
+                b = HH(b, c, d, a, x[k + 2], S34, 0xc4ac5665);
+                a = II(a, b, c, d, x[k + 0], S41, 0xf4292244);
+                d = II(d, a, b, c, x[k + 7], S42, 0x432aff97);
+                c = II(c, d, a, b, x[k + 14], S43, 0xab9423a7);
+                b = II(b, c, d, a, x[k + 5], S44, 0xfc93a039);
+                a = II(a, b, c, d, x[k + 12], S41, 0x655b59c3);
+                d = II(d, a, b, c, x[k + 3], S42, 0x8f0ccc92);
+                c = II(c, d, a, b, x[k + 10], S43, 0xffeff47d);
+                b = II(b, c, d, a, x[k + 1], S44, 0x85845dd1);
+                a = II(a, b, c, d, x[k + 8], S41, 0x6fa87e4f);
+                d = II(d, a, b, c, x[k + 15], S42, 0xfe2ce6e0);
+                c = II(c, d, a, b, x[k + 6], S43, 0xa3014314);
+                b = II(b, c, d, a, x[k + 13], S44, 0x4e0811a1);
+                a = II(a, b, c, d, x[k + 4], S41, 0xf7537e82);
+                d = II(d, a, b, c, x[k + 11], S42, 0xbd3af235);
+                c = II(c, d, a, b, x[k + 2], S43, 0x2ad7d2bb);
+                b = II(b, c, d, a, x[k + 9], S44, 0xeb86d391);
+                a = addUnsigned(a, AA); b = addUnsigned(b, BB);
+                c = addUnsigned(c, CC); d = addUnsigned(d, DD);
+            }
+
+            return (wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d)).toLowerCase();
+        }
+
+        /* =========================================================
+           Page logic
+           ========================================================= */
+        const hashInput = document.getElementById("hashInput");
+        const uppercaseToggle = document.getElementById("uppercaseToggle");
+        const btnClear = document.getElementById("btnClear");
+        const hashOutputs = document.getElementById("hashOutputs");
+        const algoToggles = document.querySelectorAll(".algo-toggle");
+
+        const ALGO_ORDER = ["MD5", "SHA-1", "SHA-256", "SHA-384", "SHA-512"];
+        const lastHashes = {};
+
+        function buildRows() {
+            hashOutputs.innerHTML = "";
+            ALGO_ORDER.forEach(algo => {
+                const toggle = document.querySelector(`.algo-toggle[value="${algo}"]`);
+                if (!toggle || !toggle.checked) return;
+
+                const rowId = "row-" + algo.replace("-", "");
+                hashOutputs.innerHTML += `
+        <div class="p-3 rounded border bg-output-box hash-row" id="${rowId}">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <small class="text-body-secondary fw-semibold">${algo}</small>
+                <button class="btn btn-sm btn-outline-info" onclick="copyHash('${algo}')">
+                    <i class="fa-solid fa-copy me-1"></i> Copy
+                </button>
+            </div>
+            <span class="font-monospace text-body fw-bold small output-value" data-algo="${algo}">-</span>
+        </div>
+        `;
+            });
+        }
+
+        async function sha(algo, text) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(text);
+            const hashBuffer = await crypto.subtle.digest(algo, data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+        }
+
+        async function computeHashes() {
+            const text = hashInput.value;
+            const upper = uppercaseToggle.checked;
+
+            for (const algo of ALGO_ORDER) {
+                const toggle = document.querySelector(`.algo-toggle[value="${algo}"]`);
+                const targetEl = document.querySelector(`[data-algo="${algo}"]`);
+                if (!toggle || !toggle.checked || !targetEl) continue;
+
+                if (!text) {
+                    targetEl.textContent = "-";
+                    lastHashes[algo] = "";
+                    continue;
+                }
+
+                let digest;
+                if (algo === "MD5") {
+                    digest = md5(text);
+                } else {
+                    digest = await sha(algo, text);
+                }
+
+                digest = upper ? digest.toUpperCase() : digest;
+                lastHashes[algo] = digest;
+                targetEl.textContent = digest;
+            }
+        }
+
+        async function copyHash(algo) {
+            const value = lastHashes[algo];
+            if (value) {
+                await navigator.clipboard.writeText(value);
+            }
+        }
+        window.copyHash = copyHash;
+
+        // Event Listeners
+        hashInput.addEventListener("input", computeHashes);
+        uppercaseToggle.addEventListener("change", computeHashes);
+        btnClear.addEventListener("click", () => {
+            hashInput.value = "";
+            computeHashes();
+            hashInput.focus();
+        });
+        algoToggles.forEach(toggle => {
+            toggle.addEventListener("change", () => {
+                buildRows();
+                computeHashes();
+            });
+        });
+
+        // Init
+        buildRows();
+        computeHashes();
+
+    </script>
+
+</body>
+
+</html>

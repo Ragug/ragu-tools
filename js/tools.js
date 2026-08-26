@@ -26,26 +26,33 @@ const TOOLS = [
         category: "URL",
         page: "url-encode.html",
         description: "Safely encode special characters for URLs or decode encoded query strings."
-  },
-  {
-      name: "URL Decoder",
-      icon: "fa-link",
-      category: "URL",
-      page: "url-decode.html",
-      description: "Safely encode special characters for URLs or decode encoded query strings."
-  },
+    },
+    {
+        name: "URL Decoder",
+        icon: "fa-link",
+        category: "URL",
+        page: "url-decode.html",
+        description: "Safely encode special characters for URLs or decode encoded query strings."
+    },
     {
         name: "Base64 Encoder",
         icon: "fa-code",
         category: "Encoding",
         page: "base64-encode.html",
         description: "Encode raw string payloads into Base64 format or decode Base64 strings."
-  },
-  {
-      name: "Base64 Decoder",
-      icon: "fa-code",
-      category: "Encoding",
-      page: "base64-decode.html",
-      description: "Encode raw string payloads into Base64 format or decode Base64 strings."
-  }
+    },
+    {
+        name: "Base64 Decoder",
+        icon: "fa-code",
+        category: "Encoding",
+        page: "base64-decode.html",
+        description: "Encode raw string payloads into Base64 format or decode Base64 strings."
+    },
+    {
+        name: "Text Hash Generator",
+        icon: "fa-fingerprint",
+        category: "Security",
+        page: "text-hash-generator.html",
+        description: "Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text, right in your browser."
+    }
 ];
