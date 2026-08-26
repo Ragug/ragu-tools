@@ -54,5 +54,11 @@ const TOOLS = [
         category: "Security",
         page: "text-hash-generator.html",
         description: "Generate MD5, SHA-1, SHA-256, SHA-384, and SHA-512 hashes from any text, right in your browser."
+    }, {
+        name: "JWT Secret Key Generator",
+        icon: "fa-key",
+        category: "Security",
+        page: "jwt-secret-generator.html",
+        description: "Generate cryptographically secure random secret keys for signing JWTs with HS256, HS384, or HS512."
     }
 ];
