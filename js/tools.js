@@ -67,5 +67,12 @@ const TOOLS = [
         category: "Developer",
         page: "http-status-codes.html",
         description: "Searchable reference of every HTTP status code (1xx-5xx) with plain-language explanations."
+    },
+    {
+        name: "Chmod Calculator",
+        icon: "fa-lock-open",
+        category: "Developer",
+        page: "chmod-calculator.html",
+        description: "Build Linux file permissions visually and see exactly how the octal number is calculated."
     }
 ];

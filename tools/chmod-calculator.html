@@ -1,0 +1,697 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>Chmod Calculator - Linux File Permissions Explained - Ragu Tools</title>
+    <meta name="description"
+        content="Free online chmod calculator. Toggle read, write, execute permissions for owner, group, and others to instantly get the octal number, symbolic notation, and chmod command — with a step-by-step explanation of the math.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .output-value {
+            word-break: break-all;
+        }
+
+        /* Light Mode Defaults */
+        [data-bs-theme="light"] .bg-output-box {
+            background-color: #f8f9fa !important;
+            border-color: #dee2e6 !important;
+        }
+
+        /* High-Contrast Dark Mode Overrides */
+        [data-bs-theme="dark"] .bg-output-box {
+            background-color: #1a1d20 !important;
+            border-color: #343a40 !important;
+        }
+
+        [data-bs-theme="dark"] .text-primary {
+            color: #6ea8fe !important;
+        }
+
+        [data-bs-theme="dark"] .text-info {
+            color: #6edff6 !important;
+        }
+
+        .perm-toggle {
+            width: 100%;
+            padding: 0.65rem 0.25rem;
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            font-size: 1.05rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color, #cbd5e1);
+            background-color: transparent;
+            color: var(--text-muted, #475569);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .perm-toggle.active[data-bit="4"] {
+            background-color: rgba(13, 202, 240, 0.15);
+            border-color: #0dcaf0;
+            color: #0dcaf0;
+        }
+
+        .perm-toggle.active[data-bit="2"] {
+            background-color: rgba(255, 193, 7, 0.15);
+            border-color: #ffc107;
+            color: #d39e00;
+        }
+
+        [data-bs-theme="dark"] .perm-toggle.active[data-bit="2"] {
+            color: #ffca2c;
+        }
+
+        .perm-toggle.active[data-bit="1"] {
+            background-color: rgba(25, 135, 84, 0.15);
+            border-color: #198754;
+            color: #198754;
+        }
+
+        .group-header {
+            font-weight: 700;
+            letter-spacing: 0.03em;
+        }
+
+        .octal-digit {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .breakdown-chip {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+        }
+
+        .breakdown-chip.on {
+            font-weight: 700;
+        }
+
+        .breakdown-chip.off {
+            opacity: 0.35;
+            text-decoration: line-through;
+        }
+
+        .symbolic-char {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            font-size: 1.15rem;
+        }
+
+        .symbolic-char.r {
+            color: #0dcaf0;
+        }
+
+        .symbolic-char.w {
+            color: #ffc107;
+        }
+
+        [data-bs-theme="dark"] .symbolic-char.w {
+            color: #ffca2c;
+        }
+
+        .symbolic-char.x {
+            color: #198754;
+        }
+
+        .symbolic-char.dash {
+            color: var(--text-muted, #adb5bd);
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <nav id="navbar"></nav>
+
+    <main class="container py-5">
+
+        <h1 class="mb-3">
+            <i class="fa-solid fa-lock-open text-info me-2"></i>Chmod Calculator
+        </h1>
+
+        <p class="text-secondary lead fs-6">
+            Click the permission grid to build a Linux file permission set, or type an octal/symbolic value to reverse
+            it. The breakdown below shows exactly how each number is calculated.
+        </p>
+
+        <div class="row g-4">
+            <!-- Permission Grid -->
+            <div class="col-lg-7">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5 card-title mb-3">
+                            <i class="fa-solid fa-table-cells text-success me-2"></i>Permission Grid
+                        </h2>
+
+                        <div class="table-responsive">
+                            <table class="table align-middle text-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-start text-body-secondary group-header">Who</th>
+                                        <th class="text-body-secondary">Read (4)</th>
+                                        <th class="text-body-secondary">Write (2)</th>
+                                        <th class="text-body-secondary">Execute (1)</th>
+                                        <th class="text-body-secondary">Digit</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td class="text-start fw-semibold text-body">
+                                            <i class="fa-solid fa-user text-info me-1"></i> Owner
+                                        </td>
+                                        <td><button class="perm-toggle" data-group="owner" data-bit="4">r</button></td>
+                                        <td><button class="perm-toggle" data-group="owner" data-bit="2">w</button></td>
+                                        <td><button class="perm-toggle" data-group="owner" data-bit="1">x</button></td>
+                                        <td><span class="octal-digit text-info" id="digitOwner">0</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start fw-semibold text-body">
+                                            <i class="fa-solid fa-users text-info me-1"></i> Group
+                                        </td>
+                                        <td><button class="perm-toggle" data-group="group" data-bit="4">r</button></td>
+                                        <td><button class="perm-toggle" data-group="group" data-bit="2">w</button></td>
+                                        <td><button class="perm-toggle" data-group="group" data-bit="1">x</button></td>
+                                        <td><span class="octal-digit text-info" id="digitGroup">0</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-start fw-semibold text-body">
+                                            <i class="fa-solid fa-globe text-info me-1"></i> Others
+                                        </td>
+                                        <td><button class="perm-toggle" data-group="other" data-bit="4">r</button></td>
+                                        <td><button class="perm-toggle" data-group="other" data-bit="2">w</button></td>
+                                        <td><button class="perm-toggle" data-group="other" data-bit="1">x</button></td>
+                                        <td><span class="octal-digit text-info" id="digitOther">0</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <hr class="my-3">
+
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label fw-semibold text-body mb-0">Special Permissions (Advanced)</label>
+                        </div>
+                        <div class="row g-2 mb-1">
+                            <div class="col-4">
+                                <div class="form-check">
+                                    <input class="form-check-input special-toggle" type="checkbox" id="setuid"
+                                        data-bit="4">
+                                    <label class="form-check-label small text-body" for="setuid">Setuid</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check">
+                                    <input class="form-check-input special-toggle" type="checkbox" id="setgid"
+                                        data-bit="2">
+                                    <label class="form-check-label small text-body" for="setgid">Setgid</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-check">
+                                    <input class="form-check-input special-toggle" type="checkbox" id="sticky"
+                                        data-bit="1">
+                                    <label class="form-check-label small text-body" for="sticky">Sticky Bit</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="form-label fw-semibold text-body">Quick Presets</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button class="btn btn-sm btn-outline-info preset-btn" data-preset="755">755</button>
+                                <button class="btn btn-sm btn-outline-info preset-btn" data-preset="644">644</button>
+                                <button class="btn btn-sm btn-outline-info preset-btn" data-preset="700">700</button>
+                                <button class="btn btn-sm btn-outline-info preset-btn" data-preset="600">600</button>
+                                <button class="btn btn-sm btn-outline-info preset-btn" data-preset="777">777</button>
+                                <button class="btn btn-sm btn-outline-info preset-btn" data-preset="664">664</button>
+                                <button class="btn btn-sm btn-outline-info preset-btn" data-preset="750">750</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output + Reverse Lookup -->
+            <div class="col-lg-5">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h2 class="h5 card-title mb-3">
+                            <i class="fa-solid fa-hashtag text-info me-2"></i>Result
+                        </h2>
+
+                        <div class="p-3 rounded border bg-output-box mb-3">
+                            <small class="text-body-secondary d-block fw-semibold mb-1">Octal (numeric mode)</small>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span id="outOctal"
+                                    class="font-monospace fw-bold fs-3 text-info output-value">000</span>
+                                <button class="btn btn-sm btn-outline-info" onclick="copyValue('outOctal')">
+                                    <i class="fa-solid fa-copy me-1"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded border bg-output-box mb-3">
+                            <small class="text-body-secondary d-block fw-semibold mb-1">Symbolic notation</small>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span id="outSymbolic" class="output-value">
+                                    <span class="symbolic-char dash">-</span><span
+                                        class="symbolic-char dash">-</span><span
+                                        class="symbolic-char dash">-</span><span
+                                        class="symbolic-char dash">-</span><span
+                                        class="symbolic-char dash">-</span><span
+                                        class="symbolic-char dash">-</span><span
+                                        class="symbolic-char dash">-</span><span
+                                        class="symbolic-char dash">-</span><span
+                                        class="symbolic-char dash">-</span><span class="symbolic-char dash">-</span>
+                                </span>
+                                <button class="btn btn-sm btn-outline-info" onclick="copyValue('outSymbolic')">
+                                    <i class="fa-solid fa-copy me-1"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded border bg-output-box">
+                            <small class="text-body-secondary d-block fw-semibold mb-1">Command</small>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span id="outCommand" class="font-monospace fw-bold output-value">chmod 000
+                                    filename</span>
+                                <button class="btn btn-sm btn-outline-info" onclick="copyValue('outCommand')">
+                                    <i class="fa-solid fa-copy me-1"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h2 class="h5 card-title mb-3">
+                            <i class="fa-solid fa-rotate text-success me-2"></i>Reverse Lookup
+                        </h2>
+                        <label for="reverseInput" class="form-label fw-semibold text-body small">
+                            Type an octal (e.g. 755) or symbolic value (e.g. rwxr-xr-x)
+                        </label>
+                        <input type="text" id="reverseInput" class="form-control font-monospace"
+                            placeholder="e.g. 755 or rwxr-xr-x">
+                        <small id="reverseError" class="text-danger d-block mt-1" style="display:none;"></small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Explanation Panel -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <h2 class="h5 card-title mb-3">
+                    <i class="fa-solid fa-calculator text-warning me-2"></i>How This Number Was Calculated
+                </h2>
+                <p class="text-body-secondary small mb-3">
+                    Each permission group (Owner, Group, Others) gets one digit, from 0 to 7. That digit is a sum of
+                    three binary weights: <strong class="text-info">read = 4</strong>, <strong
+                        class="text-warning">write = 2</strong>, and <strong class="text-success">execute = 1</strong>.
+                    Only checked permissions count toward the total.
+                </p>
+                <div id="breakdownRows" class="d-flex flex-column gap-2"></div>
+            </div>
+        </div>
+
+        <!-- SEO / Explanation Content -->
+        <section class="mt-5 pt-4 border-top">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="h4 mb-3">How Chmod Permission Numbers Work</h2>
+                    <p class="text-secondary">
+                        Linux file permissions are split into three groups that always appear in the same order: the
+                        <strong>owner</strong> of the file, the <strong>group</strong> the file belongs to, and
+                        <strong>others</strong> (everyone else). Each group can independently be granted
+                        <strong>read</strong>, <strong>write</strong>, and <strong>execute</strong> access, which is why
+                        permissions are usually written as three sets of three characters, like <code>rwxr-xr-x</code>.
+                    </p>
+                    <p class="text-secondary">
+                        To turn that into a single digit, each of the three permissions is assigned a power of two: read
+                        is worth 4, write is worth 2, and execute is worth 1. Because 4, 2, and 1 are each represented
+                        by a different bit, every possible combination of on/off produces a unique sum between 0 and 7 —
+                        there's no ambiguity about which permissions are enabled just from looking at the number.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h3 class="h5">Step-by-Step Example: 755</h3>
+                    <ul class="text-secondary ps-3">
+                        <li><strong>Owner (7):</strong> read (4) + write (2) + execute (1) = 7 → full access.</li>
+                        <li><strong>Group (5):</strong> read (4) + execute (1) = 5 → write is off, so 2 is skipped.</li>
+                        <li><strong>Others (5):</strong> read (4) + execute (1) = 5 → same as group.</li>
+                        <li>Combined, this gives the octal number <strong>755</strong>, equivalent to
+                            <code>rwxr-xr-x</code> — a very common setting for scripts and executables.</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h5">Why You Can't Get, Say, "3" from Read Alone</h3>
+                    <p class="text-secondary small">
+                        Because each weight (4, 2, 1) is a distinct power of two, every digit from 0-7 maps to exactly
+                        one combination of permissions: 0 = none, 1 = execute only, 2 = write only, 3 = write + execute,
+                        4 = read only, 5 = read + execute, 6 = read + write, 7 = read + write + execute. This is the
+                        same logic as binary flags, just written in base 8 (octal) because three bits fit neatly into
+                        one octal digit.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h3 class="h5">Special Permission Bits</h3>
+                    <ul class="text-secondary ps-3">
+                        <li><strong>Setuid (4000):</strong> runs an executable with the file owner's privileges instead
+                            of the user running it.</li>
+                        <li><strong>Setgid (2000):</strong> on a file, runs with the group's privileges; on a directory,
+                            new files inherit that directory's group.</li>
+                        <li><strong>Sticky bit (1000):</strong> on a directory, only the file's owner (or root) can
+                            delete or rename files inside it, even if others have write access.</li>
+                        <li>These add an optional fourth leading digit, e.g. <code>4755</code> for setuid + rwxr-xr-x.
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h5">Developer Quick Reference</h3>
+                    <ul class="text-secondary ps-3">
+                        <li><strong>Numeric mode:</strong> <code>chmod 755 file.sh</code></li>
+                        <li><strong>Symbolic mode:</strong> <code>chmod u=rwx,g=rx,o=rx file.sh</code></li>
+                        <li><strong>Add execute for all:</strong> <code>chmod +x file.sh</code></li>
+                        <li><strong>Recursive (directories):</strong> <code>chmod -R 755 folder/</code></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer id="footer"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/tools.js"></script>
+    <script src="../js/app.js"></script>
+
+    <script>
+
+        /* =========================================================
+           State
+           ========================================================= */
+        const state = {
+            owner: { r: false, w: false, x: false },
+            group: { r: false, w: false, x: false },
+            other: { r: false, w: false, x: false },
+            special: { setuid: false, setgid: false, sticky: false }
+        };
+
+        const BIT_TO_KEY = { "4": "r", "2": "w", "1": "x" };
+        const KEY_LABEL = { r: "Read", w: "Write", x: "Execute" };
+        const KEY_WEIGHT = { r: 4, w: 2, x: 1 };
+        const GROUP_LABEL = { owner: "Owner", group: "Group", other: "Others" };
+        const GROUP_ICON = { owner: "fa-user", group: "fa-users", other: "fa-globe" };
+
+        const permToggles = document.querySelectorAll(".perm-toggle");
+        const specialToggles = document.querySelectorAll(".special-toggle");
+        const presetBtns = document.querySelectorAll(".preset-btn");
+        const reverseInput = document.getElementById("reverseInput");
+        const reverseError = document.getElementById("reverseError");
+
+        const digitEls = {
+            owner: document.getElementById("digitOwner"),
+            group: document.getElementById("digitGroup"),
+            other: document.getElementById("digitOther")
+        };
+
+        let suppressReverseSync = false;
+
+        /* =========================================================
+           Core calculation helpers
+           ========================================================= */
+        function groupDigit(group) {
+            const g = state[group];
+            return (g.r ? 4 : 0) + (g.w ? 2 : 0) + (g.x ? 1 : 0);
+        }
+
+        function specialDigit() {
+            return (state.special.setuid ? 4 : 0) + (state.special.setgid ? 2 : 0) + (state.special.sticky ? 1 : 0);
+        }
+
+        function groupSymbolic(group) {
+            const g = state[group];
+            return (g.r ? "r" : "-") + (g.w ? "w" : "-") + (g.x ? "x" : "-");
+        }
+
+        function fullOctal() {
+            const special = specialDigit();
+            const digits = groupDigit("owner") + "" + groupDigit("group") + "" + groupDigit("other");
+            return special > 0 ? special + digits : digits;
+        }
+
+        function fullSymbolic() {
+            return groupSymbolic("owner") + groupSymbolic("group") + groupSymbolic("other");
+        }
+
+        /* =========================================================
+           Render
+           ========================================================= */
+        function renderToggles() {
+            permToggles.forEach(btn => {
+                const group = btn.getAttribute("data-group");
+                const bit = btn.getAttribute("data-bit");
+                const key = BIT_TO_KEY[bit];
+                const isActive = state[group][key];
+                btn.classList.toggle("active", isActive);
+                btn.setAttribute("data-bit", bit); // ensure attribute selector styling applies
+            });
+
+            specialToggles.forEach(input => {
+                if (input.id === "setuid") input.checked = state.special.setuid;
+                if (input.id === "setgid") input.checked = state.special.setgid;
+                if (input.id === "sticky") input.checked = state.special.sticky;
+            });
+        }
+
+        function renderOutputs() {
+            digitEls.owner.textContent = groupDigit("owner");
+            digitEls.group.textContent = groupDigit("group");
+            digitEls.other.textContent = groupDigit("other");
+
+            document.getElementById("outOctal").textContent = fullOctal();
+
+            const sym = fullSymbolic();
+            const specialChars = specialDigit() > 0
+                ? (state.special.setuid ? "s" : "-") + (state.special.setgid ? "s" : "-") + (state.special.sticky ? "t" : "-")
+                : "";
+            const fullSym = specialChars ? sym + " (" + specialChars + ")" : sym;
+
+            const symOutEl = document.getElementById("outSymbolic");
+            symOutEl.innerHTML = sym.split("").map(ch => {
+                const cls = ch === "r" ? "r" : ch === "w" ? "w" : ch === "x" ? "x" : "dash";
+                return `<span class="symbolic-char ${cls}">${ch}</span>`;
+            }).join("");
+
+            document.getElementById("outCommand").textContent = `chmod ${fullOctal()} filename`;
+
+            renderBreakdown();
+
+            if (!suppressReverseSync) {
+                reverseInput.value = fullOctal();
+            }
+            reverseError.style.display = "none";
+        }
+
+        function renderBreakdown() {
+            const container = document.getElementById("breakdownRows");
+            container.innerHTML = ["owner", "group", "other"].map(group => {
+                const g = state[group];
+                const digit = groupDigit(group);
+                const chips = ["r", "w", "x"].map(key => {
+                    const on = g[key];
+                    return `<span class="breakdown-chip ${on ? "on text-body" : "off text-body-secondary"}">${KEY_LABEL[key]} (${KEY_WEIGHT[key]})</span>`;
+                }).join(`<span class="text-body-secondary mx-1">+</span>`);
+
+                return `
+        <div class="p-2 rounded border bg-output-box d-flex flex-wrap align-items-center gap-2">
+            <span class="badge bg-info-subtle text-info border border-info-subtle" style="min-width:80px;">
+                <i class="fa-solid ${GROUP_ICON[group]} me-1"></i>${GROUP_LABEL[group]}
+            </span>
+            <span class="d-flex flex-wrap align-items-center gap-1">${chips}</span>
+            <span class="text-body-secondary mx-1">=</span>
+            <span class="fw-bold text-info fs-5">${digit}</span>
+        </div>
+        `;
+            }).join("");
+        }
+
+        function renderAll() {
+            renderToggles();
+            renderOutputs();
+        }
+
+        /* =========================================================
+           Event Handlers
+           ========================================================= */
+        permToggles.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const group = btn.getAttribute("data-group");
+                const key = BIT_TO_KEY[btn.getAttribute("data-bit")];
+                state[group][key] = !state[group][key];
+                suppressReverseSync = false;
+                renderAll();
+            });
+        });
+
+        specialToggles.forEach(input => {
+            input.addEventListener("change", () => {
+                if (input.id === "setuid") state.special.setuid = input.checked;
+                if (input.id === "setgid") state.special.setgid = input.checked;
+                if (input.id === "sticky") state.special.sticky = input.checked;
+                renderAll();
+            });
+        });
+
+        presetBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                applyOctal(btn.getAttribute("data-preset"));
+                renderAll();
+            });
+        });
+
+        /* =========================================================
+           Reverse Lookup (octal or symbolic input)
+           ========================================================= */
+        function applyOctal(str) {
+            const digits = str.split("").map(Number);
+            const groups = ["owner", "group", "other"];
+
+            let special = 0, permDigits = digits;
+            if (digits.length === 4) {
+                special = digits[0];
+                permDigits = digits.slice(1);
+            }
+
+            permDigits.forEach((d, i) => {
+                const group = groups[i];
+                state[group].r = !!(d & 4);
+                state[group].w = !!(d & 2);
+                state[group].x = !!(d & 1);
+            });
+
+            state.special.setuid = !!(special & 4);
+            state.special.setgid = !!(special & 2);
+            state.special.sticky = !!(special & 1);
+        }
+
+        function applySymbolic(str) {
+            // Accept plain 9-char rwx strings, or 10-char with a leading type char (e.g. -rwxr-xr-x)
+            let clean = str;
+            if (clean.length === 10) clean = clean.slice(1);
+            if (clean.length !== 9) throw new Error("Symbolic notation must be 9 characters (e.g. rwxr-xr-x).");
+
+            const groups = ["owner", "group", "other"];
+            for (let i = 0; i < 3; i++) {
+                const chunk = clean.slice(i * 3, i * 3 + 3);
+                const group = groups[i];
+                const rChar = chunk[0], wChar = chunk[1], xChar = chunk[2];
+
+                if (rChar !== "r" && rChar !== "-") throw new Error("Invalid character in read position.");
+                if (wChar !== "w" && wChar !== "-") throw new Error("Invalid character in write position.");
+                if (!["x", "s", "S", "t", "T", "-"].includes(xChar)) throw new Error("Invalid character in execute position.");
+
+                state[group].r = rChar === "r";
+                state[group].w = wChar === "w";
+                state[group].x = ["x", "s", "t"].includes(xChar);
+
+                if (i === 0 && (xChar === "s" || xChar === "S")) state.special.setuid = true;
+                if (i === 1 && (xChar === "s" || xChar === "S")) state.special.setgid = true;
+                if (i === 2 && (xChar === "t" || xChar === "T")) state.special.sticky = true;
+            }
+        }
+
+        reverseInput.addEventListener("input", () => {
+            const raw = reverseInput.value.trim();
+
+            if (!raw) {
+                reverseError.style.display = "none";
+                return;
+            }
+
+            const isDigitsOnly = /^[0-9]+$/.test(raw);
+            const isSymbolicChars = /^[rwxstST-]+$/i.test(raw);
+
+            try {
+                if (isDigitsOnly) {
+                    if (raw.length > 4) {
+                        throw new Error("Octal values are at most 4 digits (e.g. 0755).");
+                    }
+                    if (!/^[0-7]+$/.test(raw)) {
+                        throw new Error("Octal digits must each be between 0 and 7.");
+                    }
+                    if (raw.length < 3) {
+                        // Still typing a valid-so-far octal number — not an error yet.
+                        reverseError.style.display = "none";
+                        return;
+                    }
+                    applyOctal(raw);
+                } else if (isSymbolicChars) {
+                    if (raw.length < 9) {
+                        // Still typing a valid-so-far symbolic value — not an error yet.
+                        reverseError.style.display = "none";
+                        return;
+                    }
+                    if (raw.length > 10) {
+                        throw new Error("Symbolic notation is 9 characters (or 10 with a leading file-type character).");
+                    }
+                    applySymbolic(raw.toLowerCase());
+                } else {
+                    throw new Error("Enter a 3-4 digit octal (e.g. 755) or 9-10 character symbolic value (e.g. rwxr-xr-x).");
+                }
+
+                suppressReverseSync = true;
+                renderToggles();
+                renderOutputs();
+                suppressReverseSync = false;
+                reverseError.style.display = "none";
+            } catch (err) {
+                reverseError.textContent = err.message;
+                reverseError.style.display = "block";
+            }
+        });
+
+        /* =========================================================
+           Copy Helper
+           ========================================================= */
+        async function copyValue(id) {
+            const element = document.getElementById(id);
+            const text = element.textContent.trim();
+            if (text) {
+                await navigator.clipboard.writeText(text);
+            }
+        }
+        window.copyValue = copyValue;
+
+        // Init with a sensible default (755)
+        applyOctal("755");
+        renderAll();
+
+    </script>
+
+</body>
+
+</html>
