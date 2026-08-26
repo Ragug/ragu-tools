@@ -60,5 +60,12 @@ const TOOLS = [
         category: "Security",
         page: "jwt-secret-generator.html",
         description: "Generate cryptographically secure random secret keys for signing JWTs with HS256, HS384, or HS512."
+    },
+    {
+        name: "HTTP Status Codes Reference",
+        icon: "fa-server",
+        category: "Developer",
+        page: "http-status-codes.html",
+        description: "Searchable reference of every HTTP status code (1xx-5xx) with plain-language explanations."
     }
 ];

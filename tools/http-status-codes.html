@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>HTTP Status Codes Reference & Search - Ragu Tools</title>
+    <meta name="description"
+        content="Searchable reference of every HTTP status code (1xx-5xx) with descriptions. Quickly look up what 404, 429, 500 and every other status code means.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .output-value {
+            word-break: break-all;
+        }
+
+        /* Light Mode Defaults */
+        [data-bs-theme="light"] .bg-output-box {
+            background-color: #f8f9fa !important;
+            border-color: #dee2e6 !important;
+        }
+
+        /* High-Contrast Dark Mode Overrides */
+        [data-bs-theme="dark"] .bg-output-box {
+            background-color: #1a1d20 !important;
+            border-color: #343a40 !important;
+        }
+
+        [data-bs-theme="dark"] .text-primary {
+            color: #6ea8fe !important;
+        }
+
+        [data-bs-theme="dark"] .text-info {
+            color: #6edff6 !important;
+        }
+
+        .status-code-badge {
+            font-size: 1rem;
+            min-width: 62px;
+            text-align: center;
+        }
+
+        .badge-1xx {
+            background-color: rgba(13, 202, 240, 0.15);
+            color: #0dcaf0;
+            border: 1px solid rgba(13, 202, 240, 0.4);
+        }
+
+        .badge-2xx {
+            background-color: rgba(25, 135, 84, 0.15);
+            color: #198754;
+            border: 1px solid rgba(25, 135, 84, 0.4);
+        }
+
+        .badge-3xx {
+            background-color: rgba(13, 110, 253, 0.15);
+            color: #6ea8fe;
+            border: 1px solid rgba(13, 110, 253, 0.4);
+        }
+
+        .badge-4xx {
+            background-color: rgba(255, 193, 7, 0.15);
+            color: #d39e00;
+            border: 1px solid rgba(255, 193, 7, 0.4);
+        }
+
+        .badge-5xx {
+            background-color: rgba(220, 53, 69, 0.15);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.4);
+        }
+
+        [data-bs-theme="dark"] .badge-4xx {
+            color: #ffca2c;
+        }
+
+        .status-row {
+            transition: background-color 0.15s ease, transform 0.1s ease;
+        }
+
+        .status-row:hover {
+            transform: translateX(2px);
+        }
+
+        .category-pill {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .category-pill.active {
+            background-color: var(--accent-indigo, #4338ca) !important;
+            color: #fff !important;
+            border-color: var(--accent-indigo, #4338ca) !important;
+        }
+
+        #noResults {
+            display: none;
+        }
+
+        mark {
+            background-color: rgba(255, 193, 7, 0.5);
+            color: inherit;
+            padding: 0 2px;
+            border-radius: 3px;
+        }
+
+        .border-dashed {
+            border-style: dashed !important;
+            opacity: 0.96;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <nav id="navbar"></nav>
+
+    <main class="container py-5">
+
+        <h1 class="mb-3">
+            <i class="fa-solid fa-server text-info me-2"></i>HTTP Status Codes Reference
+        </h1>
+
+        <p class="text-secondary lead fs-6">
+            Every standard HTTP response status code, from 100 to 511, with a plain-language explanation. Search by code
+            or keyword to find what you need instantly.
+        </p>
+
+        <!-- Search + Filter Bar -->
+        <div class="card shadow-sm mb-4 border">
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-text bg-output-box">
+                            <i class="fa-solid fa-magnifying-glass text-info"></i>
+                        </span>
+                        <input type="text" id="searchInput" class="form-control font-monospace"
+                            placeholder="Search by code or keyword (e.g. 404, timeout, unauthorized)"
+                            autocomplete="off">
+                        <button id="btnClearSearch" class="btn btn-outline-secondary" type="button"
+                            title="Clear search">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge rounded-pill category-pill active border" data-category="all">All</span>
+                    <span class="badge rounded-pill category-pill border badge-1xx" data-category="1xx">1xx
+                        Informational</span>
+                    <span class="badge rounded-pill category-pill border badge-2xx" data-category="2xx">2xx
+                        Success</span>
+                    <span class="badge rounded-pill category-pill border badge-3xx" data-category="3xx">3xx
+                        Redirection</span>
+                    <span class="badge rounded-pill category-pill border badge-4xx" data-category="4xx">4xx Client
+                        Error</span>
+                    <span class="badge rounded-pill category-pill border badge-5xx" data-category="5xx">5xx Server
+                        Error</span>
+                    <span class="badge rounded-pill category-pill border" data-category="nonstd">
+                        <i class="fa-solid fa-plug-circle-exclamation me-1"></i>Non-Standard / Vendor
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results count -->
+        <p class="text-body-secondary small mb-3">
+            Showing <span id="resultCount" class="fw-semibold text-body">0</span> of <span id="totalCount"
+                class="fw-semibold text-body">0</span> status codes
+            <span class="text-body-secondary">— includes IANA-registered codes plus non-standard codes from Cloudflare,
+                Nginx, IIS, Apache/cPanel, and popular frameworks.</span>
+        </p>
+
+        <!-- Status Code List -->
+        <div id="statusList" class="d-flex flex-column gap-2"></div>
+
+        <!-- No Results -->
+        <div id="noResults" class="text-center py-5">
+            <i class="fa-solid fa-magnifying-glass-minus fs-1 text-body-secondary mb-3 d-block"></i>
+            <p class="text-body-secondary mb-0">No status codes match your search.</p>
+        </div>
+
+        <!-- SEO Content Section -->
+        <section class="mt-5 pt-4 border-top">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="h4 mb-3">How HTTP Status Codes Are Grouped</h2>
+                    <p class="text-secondary">
+                        HTTP status codes are three-digit numbers returned by a server in response to a client's
+                        request. The first digit defines the class of response, and the remaining two digits do not have
+                        any classifying role. There are five classes defined by the standard: informational responses
+                        (1xx), successful responses (2xx), redirects (3xx), client errors (4xx), and server errors
+                        (5xx).
+                    </p>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h3 class="h5">Most Common Codes</h3>
+                    <ul class="text-secondary ps-3">
+                        <li><strong>200 OK:</strong> the request succeeded.</li>
+                        <li><strong>301 / 302:</strong> the resource has moved, permanently or temporarily.</li>
+                        <li><strong>400 Bad Request:</strong> the request was malformed.</li>
+                        <li><strong>401 / 403:</strong> authentication or permission problems.</li>
+                        <li><strong>404 Not Found:</strong> the resource does not exist.</li>
+                        <li><strong>500 Internal Server Error:</strong> something failed on the server.</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h5">Developer Quick Reference</h3>
+                    <ul class="text-secondary ps-3">
+                        <li><strong>cURL:</strong> <code>curl -o /dev/null -s -w "%{http_code}\n" URL</code></li>
+                        <li><strong>JavaScript (fetch):</strong> <code>response.status</code></li>
+                        <li><strong>Python (requests):</strong> <code>response.status_code</code></li>
+                        <li><strong>Nginx / Apache logs:</strong> status code is the field right after the request line.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <h3 class="h5">Non-Standard & Vendor-Specific Codes</h3>
+                    <p class="text-secondary">
+                        Not every three-digit code you'll see in the wild comes from the official IANA registry. Server
+                        software and CDNs define their own codes to describe conditions the standard doesn't cover —
+                        Cloudflare's 520-530 range for proxy/origin failures, Nginx's 444/494-499 for connection-level
+                        issues, and IIS's 440/449 for session handling are common examples. This reference marks these
+                        clearly with a "Non-standard" tag and the responsible vendor, and they can be filtered
+                        separately using the "Non-Standard / Vendor" pill above.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer id="footer"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/tools.js"></script>
+    <script src="../js/app.js"></script>
+
+    <script>
+
+        /* =========================================================
+           Status Code Data
+           ========================================================= */
+        const STATUS_CODES = [
+            { code: 100, name: "Continue", category: "1xx", description: "Waiting for the client to emit the body of the request." },
+            { code: 101, name: "Switching Protocols", category: "1xx", description: "The server has agreed to change protocol." },
+            { code: 102, name: "Processing", category: "1xx", description: "The server is processing the request, but no response is available yet. For WebDav." },
+            { code: 103, name: "Early Hints", category: "1xx", description: "The server returns some response headers before final HTTP message." },
+
+            { code: 200, name: "OK", category: "2xx", description: "Standard response for successful HTTP requests." },
+            { code: 201, name: "Created", category: "2xx", description: "The request has been fulfilled, resulting in the creation of a new resource." },
+            { code: 202, name: "Accepted", category: "2xx", description: "The request has been accepted for processing, but the processing has not been completed." },
+            { code: 203, name: "Non-Authoritative Information", category: "2xx", description: "The request is successful but the content of the original request has been modified by a transforming proxy." },
+            { code: 204, name: "No Content", category: "2xx", description: "The server successfully processed the request and is not returning any content." },
+            { code: 205, name: "Reset Content", category: "2xx", description: "The server indicates to reinitialize the document view which sent this request." },
+            { code: 206, name: "Partial Content", category: "2xx", description: "The server is delivering only part of the resource due to a range header sent by the client." },
+            { code: 207, name: "Multi-Status", category: "2xx", description: "The message body that follows is an XML message and can contain a number of separate response codes. For WebDav." },
+            { code: 208, name: "Already Reported", category: "2xx", description: "The members of a DAV binding have already been enumerated in a preceding part of the (multistatus) response. For WebDav." },
+            { code: 226, name: "IM Used", category: "2xx", description: "The server has fulfilled a request for the resource, and the response is a representation of the result." },
+
+            { code: 300, name: "Multiple Choices", category: "3xx", description: "Indicates multiple options for the resource that the client may follow." },
+            { code: 301, name: "Moved Permanently", category: "3xx", description: "This and all future requests should be directed to the given URI." },
+            { code: 302, name: "Found", category: "3xx", description: "Redirect to another URL. This is an example of industry practice contradicting the standard." },
+            { code: 303, name: "See Other", category: "3xx", description: "The response to the request can be found under another URI using a GET method." },
+            { code: 304, name: "Not Modified", category: "3xx", description: "Indicates that the resource has not been modified since the version specified by the request headers." },
+            { code: 305, name: "Use Proxy", category: "3xx", description: "The requested resource is available only through a proxy, the address for which is provided in the response." },
+            { code: 306, name: "Switch Proxy", category: "3xx", description: "No longer used. Originally meant \"Subsequent requests should use the specified proxy.\"" },
+            { code: 307, name: "Temporary Redirect", category: "3xx", description: "In this case, the request should be repeated with another URI; however, future requests should still use the original URI." },
+            { code: 308, name: "Permanent Redirect", category: "3xx", description: "The request and all future requests should be repeated using another URI." },
+
+            { code: 400, name: "Bad Request", category: "4xx", description: "The server cannot or will not process the request due to an apparent client error." },
+            { code: 401, name: "Unauthorized", category: "4xx", description: "Similar to 403 Forbidden, but specifically for use when authentication is required and has failed or has not yet been provided." },
+            { code: 402, name: "Payment Required", category: "4xx", description: "Reserved for future use. The original intention was that this code might be used as part of some form of digital cash or micropayment scheme." },
+            { code: 403, name: "Forbidden", category: "4xx", description: "The request was valid, but the server is refusing action. The user might not have the necessary permissions for a resource." },
+            { code: 404, name: "Not Found", category: "4xx", description: "The requested resource could not be found but may be available in the future." },
+            { code: 405, name: "Method Not Allowed", category: "4xx", description: "A request method is not supported for the requested resource." },
+            { code: 406, name: "Not Acceptable", category: "4xx", description: "The requested resource is capable of generating only content not acceptable according to the Accept headers sent in the request." },
+            { code: 407, name: "Proxy Authentication Required", category: "4xx", description: "The client must first authenticate itself with the proxy." },
+            { code: 408, name: "Request Timeout", category: "4xx", description: "The server timed out waiting for the request." },
+            { code: 409, name: "Conflict", category: "4xx", description: "Indicates that the request could not be processed because of conflict in the request, such as an edit conflict." },
+            { code: 410, name: "Gone", category: "4xx", description: "Indicates that the resource requested is no longer available and will not be available again." },
+            { code: 411, name: "Length Required", category: "4xx", description: "The request did not specify the length of its content, which is required by the requested resource." },
+            { code: 412, name: "Precondition Failed", category: "4xx", description: "The server does not meet one of the preconditions that the requester put on the request." },
+            { code: 413, name: "Payload Too Large", category: "4xx", description: "The request is larger than the server is willing or able to process." },
+            { code: 414, name: "URI Too Long", category: "4xx", description: "The URI provided was too long for the server to process." },
+            { code: 415, name: "Unsupported Media Type", category: "4xx", description: "The request entity has a media type which the server or resource does not support." },
+            { code: 416, name: "Range Not Satisfiable", category: "4xx", description: "The client has asked for a portion of the file, but the server cannot supply that portion." },
+            { code: 417, name: "Expectation Failed", category: "4xx", description: "The server cannot meet the requirements of the Expect request-header field." },
+            { code: 418, name: "I'm a teapot", category: "4xx", description: "The server refuses the attempt to brew coffee with a teapot." },
+            { code: 419, name: "Page Expired", category: "4xx", description: "Not part of the HTTP standard; reserved as unused in RFC 9110. Used informally by some frameworks (notably Laravel) to signal an expired CSRF token or session.", standard: false, vendor: "Laravel" },
+            { code: 421, name: "Misdirected Request", category: "4xx", description: "The request was directed at a server that is not able to produce a response." },
+            { code: 422, name: "Unprocessable Entity", category: "4xx", description: "The request was well-formed but was unable to be followed due to semantic errors." },
+            { code: 423, name: "Locked", category: "4xx", description: "The resource that is being accessed is locked." },
+            { code: 424, name: "Failed Dependency", category: "4xx", description: "The request failed due to failure of a previous request." },
+            { code: 425, name: "Too Early", category: "4xx", description: "Indicates that the server is unwilling to risk processing a request that might be replayed." },
+            { code: 426, name: "Upgrade Required", category: "4xx", description: "The client should switch to a different protocol such as TLS/1.0." },
+            { code: 427, name: "Unassigned", category: "4xx", description: "Reserved in the IANA HTTP status code registry. No standard meaning has been assigned to this code." },
+            { code: 428, name: "Precondition Required", category: "4xx", description: "The origin server requires the request to be conditional." },
+            { code: 429, name: "Too Many Requests", category: "4xx", description: "The user has sent too many requests in a given amount of time." },
+            { code: 430, name: "Request Header Fields Too Large", category: "4xx", description: "Not part of the official standard; used by some platforms (e.g. Shopify) instead of, or alongside, 431 for oversized header fields.", standard: false, vendor: "Shopify" },
+            { code: 431, name: "Request Header Fields Too Large", category: "4xx", description: "The server is unwilling to process the request because either an individual header field, or all the header fields collectively, are too large." },
+            { code: 440, name: "Login Time-out", category: "4xx", description: "The client's session has expired and the client must log in again.", standard: false, vendor: "Microsoft IIS" },
+            { code: 444, name: "No Response", category: "4xx", description: "The server closed the connection without sending any headers or response, often used to deter malicious or malformed requests.", standard: false, vendor: "Nginx" },
+            { code: 449, name: "Retry With", category: "4xx", description: "The request should be retried after performing the appropriate action, such as providing additional information.", standard: false, vendor: "Microsoft IIS" },
+            { code: 451, name: "Unavailable For Legal Reasons", category: "4xx", description: "A server operator has received a legal demand to deny access to a resource or to a set of resources that includes the requested resource." },
+            { code: 494, name: "Request Header Too Large", category: "4xx", description: "The client sent request headers that are too large for the server to process.", standard: false, vendor: "Nginx" },
+            { code: 495, name: "SSL Certificate Error", category: "4xx", description: "The client provided an invalid SSL certificate during the TLS handshake.", standard: false, vendor: "Nginx" },
+            { code: 496, name: "SSL Certificate Required", category: "4xx", description: "The client did not provide a required SSL certificate.", standard: false, vendor: "Nginx" },
+            { code: 497, name: "HTTP Request Sent to HTTPS Port", category: "4xx", description: "The client sent a plain HTTP request to a port expecting HTTPS.", standard: false, vendor: "Nginx" },
+            { code: 499, name: "Client Closed Request", category: "4xx", description: "The client closed the connection before the server could send a response.", standard: false, vendor: "Nginx" },
+
+            { code: 500, name: "Internal Server Error", category: "5xx", description: "A generic error message, given when an unexpected condition was encountered and no more specific message is suitable." },
+            { code: 501, name: "Not Implemented", category: "5xx", description: "The server either does not recognize the request method, or it lacks the ability to fulfill the request." },
+            { code: 502, name: "Bad Gateway", category: "5xx", description: "The server was acting as a gateway or proxy and received an invalid response from the upstream server." },
+            { code: 503, name: "Service Unavailable", category: "5xx", description: "The server is currently unavailable (because it is overloaded or down for maintenance)." },
+            { code: 504, name: "Gateway Timeout", category: "5xx", description: "The server was acting as a gateway or proxy and did not receive a timely response from the upstream server." },
+            { code: 505, name: "HTTP Version Not Supported", category: "5xx", description: "The server does not support the HTTP protocol version used in the request." },
+            { code: 506, name: "Variant Also Negotiates", category: "5xx", description: "Transparent content negotiation for the request results in a circular reference." },
+            { code: 507, name: "Insufficient Storage", category: "5xx", description: "The server is unable to store the representation needed to complete the request." },
+            { code: 508, name: "Loop Detected", category: "5xx", description: "The server detected an infinite loop while processing the request." },
+            { code: 509, name: "Bandwidth Limit Exceeded", category: "5xx", description: "The server has exceeded its allocated bandwidth quota. Commonly returned by Apache/cPanel-based hosting.", standard: false, vendor: "Apache / cPanel" },
+            { code: 510, name: "Not Extended", category: "5xx", description: "Further extensions to the request are required for the server to fulfill it." },
+            { code: 511, name: "Network Authentication Required", category: "5xx", description: "The client needs to authenticate to gain network access." },
+            { code: 520, name: "Unknown Error", category: "5xx", description: "A catch-all for an unexpected or non-standard response returned by the origin server.", standard: false, vendor: "Cloudflare" },
+            { code: 521, name: "Web Server Is Down", category: "5xx", description: "The origin server refused connections from Cloudflare.", standard: false, vendor: "Cloudflare" },
+            { code: 522, name: "Connection Timed Out", category: "5xx", description: "Cloudflare could not negotiate a TCP handshake with the origin server.", standard: false, vendor: "Cloudflare" },
+            { code: 523, name: "Origin Is Unreachable", category: "5xx", description: "Cloudflare could not reach the origin server, often due to DNS issues.", standard: false, vendor: "Cloudflare" },
+            { code: 524, name: "A Timeout Occurred", category: "5xx", description: "Cloudflare connected to the origin server, but the origin did not reply before the connection timed out.", standard: false, vendor: "Cloudflare" },
+            { code: 525, name: "SSL Handshake Failed", category: "5xx", description: "The SSL/TLS handshake between Cloudflare and the origin server failed.", standard: false, vendor: "Cloudflare" },
+            { code: 526, name: "Invalid SSL Certificate", category: "5xx", description: "Cloudflare could not validate the SSL certificate presented by the origin server.", standard: false, vendor: "Cloudflare" },
+            { code: 527, name: "Railgun Error", category: "5xx", description: "A failure occurred in the connection between Cloudflare and the origin's Railgun server.", standard: false, vendor: "Cloudflare" },
+            { code: 529, name: "Site Is Overloaded", category: "5xx", description: "Non-standard code occasionally returned by various systems when a site has exceeded its available resources.", standard: false, vendor: "Non-standard (various)" },
+            { code: 530, name: "Site Is Frozen / Origin DNS Error", category: "5xx", description: "Returned by Cloudflare, typically alongside a more specific 1xxx-series Cloudflare error code, indicating the underlying issue.", standard: false, vendor: "Cloudflare" }
+        ];
+
+        const CATEGORY_LABELS = {
+            "1xx": "Informational",
+            "2xx": "Success",
+            "3xx": "Redirection",
+            "4xx": "Client Error",
+            "5xx": "Server Error"
+        };
+
+        /* =========================================================
+           Page Logic
+           ========================================================= */
+        const searchInput = document.getElementById("searchInput");
+        const btnClearSearch = document.getElementById("btnClearSearch");
+        const statusList = document.getElementById("statusList");
+        const noResults = document.getElementById("noResults");
+        const resultCount = document.getElementById("resultCount");
+        const totalCount = document.getElementById("totalCount");
+        const categoryPills = document.querySelectorAll(".category-pill");
+
+        let activeCategory = "all";
+
+        totalCount.textContent = STATUS_CODES.length;
+
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        }
+
+        function highlight(text, query) {
+            if (!query) return escapeHtml(text);
+            const safeText = escapeHtml(text);
+            const safeQuery = escapeHtml(query).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            const regex = new RegExp(`(${safeQuery})`, "ig");
+            return safeText.replace(regex, "<mark>$1</mark>");
+        }
+
+        function render() {
+            const query = searchInput.value.trim().toLowerCase();
+
+            const filtered = STATUS_CODES.filter(item => {
+                const isNonStandard = item.standard === false;
+                const matchesCategory =
+                    activeCategory === "all" ||
+                    (activeCategory === "nonstd" ? isNonStandard : item.category === activeCategory);
+                if (!matchesCategory) return false;
+
+                if (!query) return true;
+
+                return (
+                    String(item.code).includes(query) ||
+                    item.name.toLowerCase().includes(query) ||
+                    item.description.toLowerCase().includes(query) ||
+                    (item.vendor && item.vendor.toLowerCase().includes(query))
+                );
+            });
+
+            resultCount.textContent = filtered.length;
+
+            if (filtered.length === 0) {
+                statusList.innerHTML = "";
+                noResults.style.display = "block";
+                return;
+            }
+
+            noResults.style.display = "none";
+
+            statusList.innerHTML = filtered.map(item => {
+                const isNonStandard = item.standard === false;
+                const vendorBadge = isNonStandard
+                    ? `<span class="badge border text-body-secondary align-self-center d-none d-sm-inline-block">
+                   <i class="fa-solid fa-plug-circle-exclamation me-1"></i>${escapeHtml(item.vendor || "Non-standard")}
+               </span>`
+                    : `<span class="badge badge-category align-self-center d-none d-sm-inline-block">${CATEGORY_LABELS[item.category]}</span>`;
+
+                return `
+        <div class="card shadow-sm status-row ${isNonStandard ? 'border-dashed' : ''}">
+            <div class="card-body d-flex align-items-start gap-3 py-3">
+                <span class="badge status-code-badge badge-${item.category} fs-6 py-2 px-3 rounded-3">
+                    ${item.code}
+                </span>
+                <div class="flex-grow-1">
+                    <h3 class="h6 fw-bold text-body mb-1">
+                        ${highlight(item.name, query)}
+                        ${isNonStandard ? '<span class="badge bg-secondary-subtle text-body-secondary border ms-2 fw-normal" style="font-size: 0.65rem;">NON-STANDARD</span>' : ''}
+                    </h3>
+                    <p class="text-body-secondary small mb-0">${highlight(item.description, query)}</p>
+                </div>
+                ${vendorBadge}
+            </div>
+        </div>
+        `;
+            }).join("");
+        }
+
+        searchInput.addEventListener("input", render);
+
+        btnClearSearch.addEventListener("click", () => {
+            searchInput.value = "";
+            searchInput.focus();
+            render();
+        });
+
+        categoryPills.forEach(pill => {
+            pill.addEventListener("click", () => {
+                categoryPills.forEach(p => p.classList.remove("active"));
+                pill.classList.add("active");
+                activeCategory = pill.getAttribute("data-category");
+                render();
+            });
+        });
+
+        // Support deep-linking / query param e.g. ?q=404
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("q")) {
+            searchInput.value = urlParams.get("q");
+        }
+
+        // Init
+        render();
+
+    </script>
+
+</body>
+
+</html>
