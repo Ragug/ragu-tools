@@ -74,5 +74,11 @@ const TOOLS = [
         category: "Developer",
         page: "chmod-calculator.html",
         description: "Build Linux file permissions visually and see exactly how the octal number is calculated."
+    }, {
+        name: "Sand & Aggregate Unit Calculator",
+        icon: "fa-truck-ramp-box",
+        category: "Construction",
+        page: "sand-unit-calculator.html",
+        description: "Convert length, breadth, and depth (feet + inches) into units for sand, M-sand, and crushed stone."
     }
 ];

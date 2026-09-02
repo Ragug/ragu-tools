@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>Sand & Aggregate Unit Calculator (Feet + Inch) - Ragu Tools</title>
+    <meta name="description"
+        content="Free online unit calculator for sand, M-sand, jelly, and crushed stone. Enter length, breadth, and depth in feet and inches to instantly get cubic feet volume and units (1 unit = 100 cu.ft), with a full calculation breakdown.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .output-value {
+            word-break: break-all;
+        }
+
+        /* Light Mode Defaults */
+        [data-bs-theme="light"] .bg-output-box {
+            background-color: #f8f9fa !important;
+            border-color: #dee2e6 !important;
+        }
+
+        /* High-Contrast Dark Mode Overrides */
+        [data-bs-theme="dark"] .bg-output-box {
+            background-color: #1a1d20 !important;
+            border-color: #343a40 !important;
+        }
+
+        [data-bs-theme="dark"] .text-primary {
+            color: #6ea8fe !important;
+        }
+
+        [data-bs-theme="dark"] .text-info {
+            color: #6edff6 !important;
+        }
+
+        .dim-label {
+            width: 92px;
+            flex-shrink: 0;
+        }
+
+        .dim-input-group {
+            max-width: 130px;
+        }
+
+        .dim-unit-suffix {
+            min-width: 44px;
+            justify-content: center;
+        }
+
+        .result-big {
+            font-size: 2.75rem;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .formula-chip {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .material-pill {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .material-pill.active {
+            background-color: var(--accent-indigo, #4338ca) !important;
+            color: #fff !important;
+            border-color: var(--accent-indigo, #4338ca) !important;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <nav id="navbar"></nav>
+
+    <main class="container py-5">
+
+        <h1 class="mb-3">
+            <i class="fa-solid fa-truck-ramp-box text-info me-2"></i>Sand &amp; Aggregate Unit Calculator
+        </h1>
+
+        <p class="text-secondary lead fs-6">
+            Enter length, breadth, and depth in feet and inches to calculate the volume and units for sand, M-sand,
+            jelly, or crushed stone. Commonly used by lorry loads: <strong>1 unit = 100 cubic feet</strong>.
+        </p>
+
+        <div class="row g-4">
+            <!-- Input Section -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5 card-title mb-3">
+                            <i class="fa-solid fa-ruler-combined text-success me-2"></i>Measurements
+                        </h2>
+
+                        <div class="mb-2">
+                            <label class="form-label fw-semibold text-body">Material</label>
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="badge rounded-pill material-pill active border"
+                                    data-material="River Sand">River Sand</span>
+                                <span class="badge rounded-pill material-pill border"
+                                    data-material="M-Sand">M-Sand</span>
+                                <span class="badge rounded-pill material-pill border"
+                                    data-material="Jelly / Crushed Stone">Jelly / Crushed Stone</span>
+                                <span class="badge rounded-pill material-pill border" data-material="Other">Other</span>
+                            </div>
+                        </div>
+
+                        <hr class="my-3">
+
+                        <!-- Column headers -->
+                        <div class="d-flex align-items-center gap-2 mb-2 text-body-secondary small fw-semibold">
+                            <span class="dim-label"></span>
+                            <span class="dim-input-group">Feet</span>
+                            <span class="dim-input-group">Inches</span>
+                        </div>
+
+                        <!-- Length -->
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <label class="dim-label fw-semibold text-body">
+                                <i class="fa-solid fa-arrows-left-right-to-line text-info me-1"></i>Length
+                            </label>
+                            <div class="input-group dim-input-group">
+                                <input type="number" min="0" step="any" class="form-control font-monospace dim-input"
+                                    id="lengthFeet" data-dim="length" data-unit="feet" placeholder="0">
+                                <span class="input-group-text dim-unit-suffix">ft</span>
+                            </div>
+                            <div class="input-group dim-input-group">
+                                <input type="number" min="0" max="11.99" step="any"
+                                    class="form-control font-monospace dim-input" id="lengthInch" data-dim="length"
+                                    data-unit="inch" placeholder="0">
+                                <span class="input-group-text dim-unit-suffix">in</span>
+                            </div>
+                        </div>
+
+                        <!-- Breadth -->
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <label class="dim-label fw-semibold text-body">
+                                <i class="fa-solid fa-arrows-up-down text-info me-1"
+                                    style="display:inline-block; transform: rotate(90deg);"></i>Breadth
+                            </label>
+                            <div class="input-group dim-input-group">
+                                <input type="number" min="0" step="any" class="form-control font-monospace dim-input"
+                                    id="breadthFeet" data-dim="breadth" data-unit="feet" placeholder="0">
+                                <span class="input-group-text dim-unit-suffix">ft</span>
+                            </div>
+                            <div class="input-group dim-input-group">
+                                <input type="number" min="0" max="11.99" step="any"
+                                    class="form-control font-monospace dim-input" id="breadthInch" data-dim="breadth"
+                                    data-unit="inch" placeholder="0">
+                                <span class="input-group-text dim-unit-suffix">in</span>
+                            </div>
+                        </div>
+
+                        <!-- Depth -->
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <label class="dim-label fw-semibold text-body">
+                                <i class="fa-solid fa-up-down text-info me-1"></i>Depth
+                            </label>
+                            <div class="input-group dim-input-group">
+                                <input type="number" min="0" step="any" class="form-control font-monospace dim-input"
+                                    id="depthFeet" data-dim="depth" data-unit="feet" placeholder="0">
+                                <span class="input-group-text dim-unit-suffix">ft</span>
+                            </div>
+                            <div class="input-group dim-input-group">
+                                <input type="number" min="0" max="11.99" step="any"
+                                    class="form-control font-monospace dim-input" id="depthInch" data-dim="depth"
+                                    data-unit="inch" placeholder="0">
+                                <span class="input-group-text dim-unit-suffix">in</span>
+                            </div>
+                        </div>
+
+                        <button id="btnClear" class="btn btn-sm btn-outline-secondary mt-1">
+                            <i class="fa-solid fa-eraser me-1"></i> Clear All
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Section -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5 card-title mb-3">
+                            <i class="fa-solid fa-cubes text-info me-2"></i>Result
+                        </h2>
+
+                        <div class="p-3 rounded border bg-output-box mb-3 text-center">
+                            <small class="text-body-secondary d-block fw-semibold mb-1" id="materialLabel">River Sand —
+                                Units</small>
+                            <span id="outUnits" class="result-big text-info output-value">0.00</span>
+                            <span class="text-body-secondary fs-6"> units</span>
+                        </div>
+
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <div class="p-2 rounded border bg-output-box text-center h-100">
+                                    <small class="text-body-secondary d-block">Volume</small>
+                                    <span id="outVolume" class="font-monospace fw-bold text-body">0.00</span>
+                                    <small class="text-body-secondary d-block">cu.ft</small>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 rounded border bg-output-box text-center h-100">
+                                    <small class="text-body-secondary d-block">Volume</small>
+                                    <span id="outVolumeM3" class="font-monospace fw-bold text-body">0.00</span>
+                                    <small class="text-body-secondary d-block">cu.m</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded border bg-output-box">
+                            <small class="text-body-secondary d-block fw-semibold mb-2">Converted Dimensions</small>
+                            <div class="d-flex justify-content-between font-monospace small mb-1">
+                                <span class="text-body-secondary">Length</span>
+                                <span id="outLength" class="fw-bold text-body">0.00 ft</span>
+                            </div>
+                            <div class="d-flex justify-content-between font-monospace small mb-1">
+                                <span class="text-body-secondary">Breadth</span>
+                                <span id="outBreadth" class="fw-bold text-body">0.00 ft</span>
+                            </div>
+                            <div class="d-flex justify-content-between font-monospace small">
+                                <span class="text-body-secondary">Depth</span>
+                                <span id="outDepth" class="fw-bold text-body">0.00 ft</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Explanation Panel -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <h2 class="h5 card-title mb-3">
+                    <i class="fa-solid fa-calculator text-warning me-2"></i>How This Was Calculated
+                </h2>
+                <p class="text-body-secondary small mb-3">
+                    Inches are converted to a fraction of a foot (÷12) and added to the feet value, for each of the
+                    three dimensions. Multiplying the three converted dimensions gives the volume in cubic feet, and
+                    dividing that by 100 gives the number of units — the standard measure lorries use for sand, M-sand,
+                    and crushed stone.
+                </p>
+                <div id="breakdownSteps" class="d-flex flex-column gap-2"></div>
+            </div>
+        </div>
+
+        <!-- SEO / Explanation Content -->
+        <section class="mt-5 pt-4 border-top">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="h4 mb-3">What Is a "Unit" of Sand or Aggregate?</h2>
+                    <p class="text-secondary">
+                        In construction, sand, M-sand, and crushed stone (jelly) are commonly measured and sold in
+                        <strong>units</strong>, where <strong>1 unit equals 100 cubic feet</strong>. This convention is
+                        widely used across South India to price lorry loads of loose material, since suppliers deliver
+                        material heaped in a lorry rather than in bags or by weight.
+                    </p>
+                    <p class="text-secondary">
+                        Because material is often measured against an excavated pit, a stockpile, or a lorry body,
+                        dimensions are usually taken in feet and inches rather than decimal feet — which is why this
+                        calculator lets you enter each dimension as a whole number of feet plus a remainder in inches.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h3 class="h5">Step-by-Step Example</h3>
+                    <ul class="text-secondary ps-3">
+                        <li><strong>Length:</strong> 10 ft 6 in → 10 + (6 ÷ 12) = 10.5 ft</li>
+                        <li><strong>Breadth:</strong> 8 ft 0 in → 8 + (0 ÷ 12) = 8.0 ft</li>
+                        <li><strong>Depth:</strong> 1 ft 3 in → 1 + (3 ÷ 12) = 1.25 ft</li>
+                        <li><strong>Volume:</strong> 10.5 × 8.0 × 1.25 = 105 cu.ft</li>
+                        <li><strong>Units:</strong> 105 ÷ 100 = <strong>1.05 units</strong></li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h5">Quick Reference</h3>
+                    <ul class="text-secondary ps-3">
+                        <li><strong>1 unit</strong> = 100 cu.ft ≈ 2.83 cu.m</li>
+                        <li><strong>1 foot</strong> = 12 inches</li>
+                        <li>A standard lorry load is often quoted as a fixed number of units (e.g. "1 unit lorry", "1.5
+                            unit lorry").</li>
+                        <li>Always confirm depth/height carefully — it's the dimension most often measured incorrectly
+                            and has the biggest effect on the final volume.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer id="footer"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/tools.js"></script>
+    <script src="../js/app.js"></script>
+
+    <script>
+
+        const dimInputs = document.querySelectorAll(".dim-input");
+        const materialPills = document.querySelectorAll(".material-pill");
+        const btnClear = document.getElementById("btnClear");
+
+        const outUnits = document.getElementById("outUnits");
+        const outVolume = document.getElementById("outVolume");
+        const outVolumeM3 = document.getElementById("outVolumeM3");
+        const outLength = document.getElementById("outLength");
+        const outBreadth = document.getElementById("outBreadth");
+        const outDepth = document.getElementById("outDepth");
+        const materialLabel = document.getElementById("materialLabel");
+        const breakdownSteps = document.getElementById("breakdownSteps");
+
+        const CUFT_TO_CUM = 0.0283168;
+
+        function getVal(id) {
+            const el = document.getElementById(id);
+            const v = parseFloat(el.value);
+            return isNaN(v) ? 0 : v;
+        }
+
+        function toFeet(feet, inch) {
+            return feet + (inch / 12);
+        }
+
+        function fmt(n, decimals) {
+            return Number(n).toFixed(decimals);
+        }
+
+        function renderBreakdown(lf, li, bf, bi, df, di, length, breadth, depth, volume, units) {
+            const rows = [
+                {
+                    label: "Length", icon: "fa-arrows-left-right-to-line",
+                    formula: `${fmt(lf, 2)} ft + (${fmt(li, 2)} in ÷ 12)`,
+                    result: `${fmt(length, 3)} ft`
+                },
+                {
+                    label: "Breadth", icon: "fa-arrows-up-down",
+                    formula: `${fmt(bf, 2)} ft + (${fmt(bi, 2)} in ÷ 12)`,
+                    result: `${fmt(breadth, 3)} ft`
+                },
+                {
+                    label: "Depth", icon: "fa-up-down",
+                    formula: `${fmt(df, 2)} ft + (${fmt(di, 2)} in ÷ 12)`,
+                    result: `${fmt(depth, 3)} ft`
+                }
+            ];
+
+            let html = rows.map(row => `
+        <div class="p-2 rounded border bg-output-box d-flex flex-wrap align-items-center gap-2">
+            <span class="badge bg-info-subtle text-info border border-info-subtle" style="min-width:90px;">
+                <i class="fa-solid ${row.icon} me-1"></i>${row.label}
+            </span>
+            <span class="formula-chip text-body-secondary">${row.formula}</span>
+            <span class="text-body-secondary mx-1">=</span>
+            <span class="fw-bold text-info formula-chip">${row.result}</span>
+        </div>
+    `).join("");
+
+            html += `
+        <div class="p-2 rounded border bg-output-box d-flex flex-wrap align-items-center gap-2">
+            <span class="badge bg-success-subtle text-success border border-success-subtle" style="min-width:90px;">
+                <i class="fa-solid fa-cube me-1"></i>Volume
+            </span>
+            <span class="formula-chip text-body-secondary">${fmt(length, 3)} × ${fmt(breadth, 3)} × ${fmt(depth, 3)}</span>
+            <span class="text-body-secondary mx-1">=</span>
+            <span class="fw-bold text-success formula-chip">${fmt(volume, 3)} cu.ft</span>
+        </div>
+    `;
+
+            html += `
+        <div class="p-2 rounded border bg-output-box d-flex flex-wrap align-items-center gap-2">
+            <span class="badge bg-warning-subtle text-warning border border-warning-subtle" style="min-width:90px;">
+                <i class="fa-solid fa-boxes-stacked me-1"></i>Units
+            </span>
+            <span class="formula-chip text-body-secondary">${fmt(volume, 3)} cu.ft ÷ 100</span>
+            <span class="text-body-secondary mx-1">=</span>
+            <span class="fw-bold text-warning formula-chip">${fmt(units, 4)} units</span>
+        </div>
+    `;
+
+            breakdownSteps.innerHTML = html;
+        }
+
+        function calculate() {
+            const lf = getVal("lengthFeet"), li = getVal("lengthInch");
+            const bf = getVal("breadthFeet"), bi = getVal("breadthInch");
+            const df = getVal("depthFeet"), di = getVal("depthInch");
+
+            const length = toFeet(lf, li);
+            const breadth = toFeet(bf, bi);
+            const depth = toFeet(df, di);
+
+            const volume = length * breadth * depth;
+            const units = volume / 100;
+
+            outLength.textContent = `${fmt(length, 2)} ft`;
+            outBreadth.textContent = `${fmt(breadth, 2)} ft`;
+            outDepth.textContent = `${fmt(depth, 2)} ft`;
+
+            outVolume.textContent = fmt(volume, 2);
+            outVolumeM3.textContent = fmt(volume * CUFT_TO_CUM, 2);
+            outUnits.textContent = fmt(units, 3);
+
+            renderBreakdown(lf, li, bf, bi, df, di, length, breadth, depth, volume, units);
+        }
+
+        dimInputs.forEach(input => {
+            input.addEventListener("input", calculate);
+        });
+
+        materialPills.forEach(pill => {
+            pill.addEventListener("click", () => {
+                materialPills.forEach(p => p.classList.remove("active"));
+                pill.classList.add("active");
+                materialLabel.textContent = `${pill.getAttribute("data-material")} — Units`;
+            });
+        });
+
+        btnClear.addEventListener("click", () => {
+            dimInputs.forEach(input => input.value = "");
+            calculate();
+        });
+
+        // Init
+        calculate();
+
+    </script>
+
+</body>
+
+</html>
