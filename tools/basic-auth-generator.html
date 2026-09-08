@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>Basic Auth Header Generator &amp; Decoder - Ragu Tools</title>
+    <meta name="description"
+        content="Free online HTTP Basic Authentication tool. Encode a username and password into a Base64 Authorization header, or decode an existing Basic Auth header back into its username and password.">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://ragutools.com/tools/basic-auth-generator.html">
+
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:title" content="Basic Auth Header Generator & Decoder">
+    <meta property="og:description"
+        content="Generate or decode a Base64 HTTP Basic Authentication header from a username and password, right in your browser.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ragutools.com/tools/basic-auth-generator.html">
+    <meta property="og:image" content="https://ragutools.com/images/basic-auth-og.jpg">
+    <meta property="og:site_name" content="Ragu Tools">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Basic Auth Header Generator & Decoder">
+    <meta name="twitter:description"
+        content="Generate or decode a Base64 HTTP Basic Authentication header from a username and password.">
+    <meta name="twitter:image" content="https://ragutools.com/images/basic-auth-og.jpg">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Basic Auth Header Generator & Decoder",
+      "url": "https://ragutools.com/tools/basic-auth-generator.html",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any (Web Browser)",
+      "description": "Encode a username and password into a Base64 HTTP Basic Authentication header, or decode an existing header back into its credentials.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Ragu Tools",
+        "url": "https://ragutools.com"
+      }
+    }
+    </script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .output-value {
+            word-break: break-all;
+        }
+
+        /* Light Mode Defaults */
+        [data-bs-theme="light"] .bg-output-box {
+            background-color: #f8f9fa !important;
+            border-color: #dee2e6 !important;
+        }
+
+        /* High-Contrast Dark Mode Overrides */
+        [data-bs-theme="dark"] .bg-output-box {
+            background-color: #1a1d20 !important;
+            border-color: #343a40 !important;
+        }
+
+        [data-bs-theme="dark"] .text-primary {
+            color: #6ea8fe !important;
+        }
+
+        [data-bs-theme="dark"] .text-info {
+            color: #6edff6 !important;
+        }
+
+        [data-bs-theme="dark"] .btn-outline-info {
+            color: #6edff6;
+            border-color: #6edff6;
+        }
+
+        [data-bs-theme="dark"] .btn-outline-info:hover {
+            background-color: #0dcaf0;
+            border-color: #0dcaf0;
+            color: #000000;
+        }
+
+        .step-arrow {
+            font-size: 1.25rem;
+            opacity: 0.6;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <nav id="navbar"></nav>
+
+    <main class="container py-5">
+
+        <h1 class="mb-3">
+            <i class="fa-solid fa-user-shield text-info me-2"></i>Basic Auth Header Generator &amp; Decoder
+        </h1>
+
+        <p class="text-secondary lead fs-6">
+            Encode a username and password into an HTTP Basic Authentication header, or decode an existing header back
+            into its credentials. Everything runs locally in your browser — nothing is sent anywhere.
+        </p>
+
+        <div class="row g-4">
+            <!-- Encoder -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5 card-title mb-3">
+                            <i class="fa-solid fa-lock text-success me-2"></i>Encode
+                        </h2>
+
+                        <div class="mb-3">
+                            <label for="encUsername" class="form-label fw-semibold text-body">Username</label>
+                            <input type="text" id="encUsername" class="form-control font-monospace"
+                                placeholder="e.g. admin" autocomplete="off">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="encPassword" class="form-label fw-semibold text-body">Password</label>
+                            <div class="input-group">
+                                <input type="password" id="encPassword" class="form-control font-monospace"
+                                    placeholder="e.g. secret123" autocomplete="off">
+                                <button id="togglePassword" class="btn btn-outline-secondary" type="button"
+                                    title="Show/hide password">
+                                    <i class="fa-solid fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded border bg-output-box mb-3">
+                            <small class="text-body-secondary d-block fw-semibold mb-1">Base64
+                                (username:password)</small>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span id="outBase64"
+                                    class="font-monospace text-body fw-bold small output-value">-</span>
+                                <button class="btn btn-sm btn-outline-info ms-2" onclick="copyValue('outBase64')">
+                                    <i class="fa-solid fa-copy me-1"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded border bg-output-box">
+                            <small class="text-body-secondary d-block fw-semibold mb-1">Authorization Header</small>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span id="outHeader"
+                                    class="font-monospace text-info fw-bold small output-value">Authorization: Basic
+                                    -</span>
+                                <button class="btn btn-sm btn-outline-info ms-2" onclick="copyValue('outHeader')">
+                                    <i class="fa-solid fa-copy me-1"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decoder -->
+            <div class="col-lg-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5 card-title mb-3">
+                            <i class="fa-solid fa-unlock text-info me-2"></i>Decode
+                        </h2>
+
+                        <div class="mb-3">
+                            <label for="decInput" class="form-label fw-semibold text-body">
+                                Base64 string or full header
+                            </label>
+                            <textarea id="decInput" class="form-control font-monospace" rows="3"
+                                placeholder="e.g. YWRtaW46c2VjcmV0MTIz or Authorization: Basic YWRtaW46c2VjcmV0MTIz"></textarea>
+                            <small id="decError" class="text-danger d-block mt-1" style="display:none;"></small>
+                        </div>
+
+                        <div class="p-3 rounded border bg-output-box mb-3">
+                            <small class="text-body-secondary d-block fw-semibold mb-1">Username</small>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span id="decUsername" class="font-monospace text-body fw-bold output-value">-</span>
+                                <button class="btn btn-sm btn-outline-info ms-2" onclick="copyValue('decUsername')">
+                                    <i class="fa-solid fa-copy me-1"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="p-3 rounded border bg-output-box">
+                            <small class="text-body-secondary d-block fw-semibold mb-1">Password</small>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span id="decPassword" class="font-monospace text-body fw-bold output-value">-</span>
+                                <button class="btn btn-sm btn-outline-info ms-2" onclick="copyValue('decPassword')">
+                                    <i class="fa-solid fa-copy me-1"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="card shadow-sm mt-4">
+            <div class="card-body">
+                <h2 class="h5 card-title mb-3">
+                    <i class="fa-solid fa-diagram-project text-warning me-2"></i>How Basic Auth Encoding Works
+                </h2>
+                <p class="text-body-secondary small mb-3">
+                    HTTP Basic Authentication doesn't encrypt your credentials — it only encodes them, so the
+                    transformation is fully reversible by design. This is exactly what's happening above:
+                </p>
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span
+                        class="badge bg-info-subtle text-info border border-info-subtle px-3 py-2 font-monospace">username:password</span>
+                    <i class="fa-solid fa-arrow-right step-arrow text-body-secondary"></i>
+                    <span
+                        class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 py-2 font-monospace">Base64
+                        encode</span>
+                    <i class="fa-solid fa-arrow-right step-arrow text-body-secondary"></i>
+                    <span
+                        class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 font-monospace">Authorization:
+                        Basic &lt;encoded&gt;</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEO Content Section -->
+        <section class="mt-5 pt-4 border-top">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="h4 mb-3">What Is HTTP Basic Authentication?</h2>
+                    <p class="text-secondary">
+                        HTTP Basic Authentication is a simple scheme built into the HTTP protocol for sending a username
+                        and password with a request. The client joins the username and password with a colon
+                        (<code>username:password</code>), encodes that string using Base64, and sends it in the
+                        <code>Authorization</code> request header prefixed with the word <code>Basic</code>.
+                    </p>
+                    <p class="text-secondary">
+                        It's important to understand that <strong>Base64 is not encryption</strong> — it's a reversible
+                        encoding, meaning anyone who intercepts the header can decode it back into the original username
+                        and password in a fraction of a second, exactly like this tool's decoder does. Basic Auth is
+                        only safe when sent over HTTPS, where TLS encrypts the entire request (including the header) in
+                        transit.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h3 class="h5">Step-by-Step Example</h3>
+                    <ul class="text-secondary ps-3">
+                        <li><strong>Credentials:</strong> username <code>admin</code>, password <code>secret123</code>
+                        </li>
+                        <li><strong>Joined:</strong> <code>admin:secret123</code></li>
+                        <li><strong>Base64 encoded:</strong> <code>YWRtaW46c2VjcmV0MTIz</code></li>
+                        <li><strong>Final header:</strong> <code>Authorization: Basic YWRtaW46c2VjcmV0MTIz</code></li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h5">Developer Quick Reference</h3>
+                    <ul class="text-secondary ps-3">
+                        <li><strong>cURL:</strong> <code>curl -u username:password https://api.example.com</code></li>
+                        <li><strong>JavaScript:</strong> <code>btoa('user:pass')</code></li>
+                        <li><strong>Python:</strong> <code>base64.b64encode(b"user:pass")</code></li>
+                        <li><strong>Bash / Linux:</strong> <code>echo -n "user:pass" | base64</code></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <p class="text-body-secondary small mb-0">
+                        <i class="fa-solid fa-triangle-exclamation text-warning me-1"></i>
+                        Never send Basic Auth credentials over plain HTTP, and avoid using it for anything sensitive in
+                        production — prefer token-based schemes (like Bearer tokens or OAuth) where possible.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer id="footer"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/tools.js"></script>
+    <script src="../js/app.js"></script>
+
+    <script>
+
+        /* =========================================================
+           UTF-8 safe Base64 helpers
+           ========================================================= */
+        function utf8ToBase64(str) {
+            return btoa(unescape(encodeURIComponent(str)));
+        }
+
+        function base64ToUtf8(str) {
+            return decodeURIComponent(escape(atob(str)));
+        }
+
+        /* =========================================================
+           Encoder
+           ========================================================= */
+        const encUsername = document.getElementById("encUsername");
+        const encPassword = document.getElementById("encPassword");
+        const togglePassword = document.getElementById("togglePassword");
+        const outBase64 = document.getElementById("outBase64");
+        const outHeader = document.getElementById("outHeader");
+
+        function updateEncoder() {
+            const username = encUsername.value;
+            const password = encPassword.value;
+
+            if (!username && !password) {
+                outBase64.textContent = "-";
+                outHeader.textContent = "Authorization: Basic -";
+                return;
+            }
+
+            const combined = `${username}:${password}`;
+
+            let encoded;
+            try {
+                encoded = utf8ToBase64(combined);
+            } catch (e) {
+                encoded = "Error encoding input";
+            }
+
+            outBase64.textContent = encoded;
+            outHeader.textContent = `Authorization: Basic ${encoded}`;
+        }
+
+        encUsername.addEventListener("input", updateEncoder);
+        encPassword.addEventListener("input", updateEncoder);
+
+        togglePassword.addEventListener("click", () => {
+            const isPassword = encPassword.type === "password";
+            encPassword.type = isPassword ? "text" : "password";
+            togglePassword.innerHTML = isPassword
+                ? '<i class="fa-solid fa-eye-slash"></i>'
+                : '<i class="fa-solid fa-eye"></i>';
+        });
+
+        /* =========================================================
+           Decoder
+           ========================================================= */
+        const decInput = document.getElementById("decInput");
+        const decError = document.getElementById("decError");
+        const decUsername = document.getElementById("decUsername");
+        const decPassword = document.getElementById("decPassword");
+
+        function updateDecoder() {
+            let raw = decInput.value.trim();
+
+            if (!raw) {
+                decError.style.display = "none";
+                decUsername.textContent = "-";
+                decPassword.textContent = "-";
+                return;
+            }
+
+            // Strip an optional "Authorization: Basic " or "Basic " prefix
+            raw = raw.replace(/^authorization\s*:\s*/i, "").replace(/^basic\s+/i, "").trim();
+
+            // While the user is still typing a short/incomplete token, don't show an error yet.
+            if (raw.length < 4 && !/={1,2}$/.test(raw)) {
+                decError.style.display = "none";
+                return;
+            }
+
+            if (!/^[A-Za-z0-9+/]+={0,2}$/.test(raw)) {
+                decError.textContent = "That doesn't look like valid Base64.";
+                decError.style.display = "block";
+                return;
+            }
+
+            let decoded;
+            try {
+                decoded = base64ToUtf8(raw);
+            } catch (e) {
+                decError.textContent = "Couldn't decode this value as Base64.";
+                decError.style.display = "block";
+                return;
+            }
+
+            const separatorIndex = decoded.indexOf(":");
+            if (separatorIndex === -1) {
+                decError.textContent = "Decoded value doesn't contain a username:password pair.";
+                decError.style.display = "block";
+                return;
+            }
+
+            decError.style.display = "none";
+            decUsername.textContent = decoded.slice(0, separatorIndex) || "(empty)";
+            decPassword.textContent = decoded.slice(separatorIndex + 1) || "(empty)";
+        }
+
+        decInput.addEventListener("input", updateDecoder);
+
+        /* =========================================================
+           Copy Helper
+           ========================================================= */
+        async function copyValue(id) {
+            const element = document.getElementById(id);
+            const text = element.textContent.trim();
+            if (text && text !== "-" && text !== "(empty)") {
+                await navigator.clipboard.writeText(text);
+            }
+        }
+        window.copyValue = copyValue;
+
+    </script>
+
+</body>
+
+</html>

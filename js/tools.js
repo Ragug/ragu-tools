@@ -80,5 +80,12 @@ const TOOLS = [
         category: "Construction",
         page: "sand-unit-calculator.html",
         description: "Convert length, breadth, and depth (feet + inches) into units for sand, M-sand, and crushed stone."
+    },
+    {
+        name: "Basic Auth Generator & Decoder",
+        icon: "fa-user-shield",
+        category: "Security",
+        page: "basic-auth-generator.html",
+        description: "Generate a Base64 Basic Auth header from a username and password, or decode one back into credentials."
     }
 ];
