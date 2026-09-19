@@ -87,5 +87,11 @@ const TOOLS = [
         category: "Security",
         page: "basic-auth-generator.html",
         description: "Generate a Base64 Basic Auth header from a username and password, or decode one back into credentials."
+    }, {
+        name: "Text Compare / Diff Checker",
+        icon: "fa-code-compare",
+        category: "Text",
+        page: "text-compare.html",
+        description: "Compare two blocks of text by character, word, or line and instantly see what changed."
     }
 ];

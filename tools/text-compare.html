@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <title>Text Compare / Diff Checker - Ragu Tools</title>
+    <meta name="description"
+        content="Free online text comparison tool powered by Google's diff-match-patch. Compare two blocks of text by character, word, or line and instantly see what was added, removed, or changed.">
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://ragutools.com/tools/text-compare.html">
+
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:title" content="Text Compare / Diff Checker">
+    <meta property="og:description"
+        content="Compare two blocks of text by character, word, or line and instantly see what changed, powered by Google's diff-match-patch.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ragutools.com/tools/text-compare.html">
+    <meta property="og:image" content="https://ragutools.com/images/text-compare-og.jpg">
+    <meta property="og:site_name" content="Ragu Tools">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Text Compare / Diff Checker">
+    <meta name="twitter:description"
+        content="Compare two blocks of text by character, word, or line and instantly see what changed.">
+    <meta name="twitter:image" content="https://ragutools.com/images/text-compare-og.jpg">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Text Compare / Diff Checker",
+      "url": "https://ragutools.com/tools/text-compare.html",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Any (Web Browser)",
+      "description": "Compare two blocks of text by character, word, or line and instantly see what was added, removed, or changed, powered by Google's diff-match-patch library.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Ragu Tools",
+        "url": "https://ragutools.com"
+      }
+    }
+    </script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+        .output-value {
+            word-break: break-all;
+        }
+
+        /* Light Mode Defaults */
+        [data-bs-theme="light"] .bg-output-box {
+            background-color: #f8f9fa !important;
+            border-color: #dee2e6 !important;
+        }
+
+        /* High-Contrast Dark Mode Overrides */
+        [data-bs-theme="dark"] .bg-output-box {
+            background-color: #1a1d20 !important;
+            border-color: #343a40 !important;
+        }
+
+        [data-bs-theme="dark"] .text-primary {
+            color: #6ea8fe !important;
+        }
+
+        [data-bs-theme="dark"] .text-info {
+            color: #6edff6 !important;
+        }
+
+        textarea.compare-input {
+            resize: vertical;
+            min-height: 220px;
+        }
+
+        .mode-pill {
+            cursor: pointer;
+            user-select: none;
+            color: var(--text-primary, #0f172a);
+            background-color: transparent;
+        }
+
+        .mode-pill.active {
+            background-color: var(--accent-indigo, #4338ca) !important;
+            color: #fff !important;
+            border-color: var(--accent-indigo, #4338ca) !important;
+        }
+
+        #diffOutput {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.55;
+            max-height: 540px;
+            overflow: auto;
+            border-radius: 8px;
+        }
+
+        .diff-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .diff-row {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .diff-row.diff-same {
+            background-color: transparent;
+        }
+
+        .diff-row.diff-added {
+            background-color: rgba(25, 135, 84, 0.16);
+        }
+
+        [data-bs-theme="dark"] .diff-row.diff-added {
+            background-color: rgba(25, 135, 84, 0.22);
+        }
+
+        .diff-row.diff-removed {
+            background-color: rgba(220, 53, 69, 0.14);
+        }
+
+        [data-bs-theme="dark"] .diff-row.diff-removed {
+            background-color: rgba(220, 53, 69, 0.2);
+        }
+
+        .diff-row.diff-changed {
+            background-color: rgba(255, 193, 7, 0.08);
+        }
+
+        [data-bs-theme="dark"] .diff-row.diff-changed {
+            background-color: rgba(255, 193, 7, 0.12);
+        }
+
+        .diff-linenum {
+            width: 48px;
+            flex-shrink: 0;
+            text-align: right;
+            padding: 2px 8px;
+            color: var(--text-muted, #94a3b8);
+            background-color: rgba(127, 127, 127, 0.08);
+            user-select: none;
+            border-right: 1px solid var(--border-color, #2d3748);
+        }
+
+        .diff-prefix {
+            width: 22px;
+            flex-shrink: 0;
+            text-align: center;
+            padding: 2px 0;
+            font-weight: 700;
+            user-select: none;
+        }
+
+        .diff-row.diff-added .diff-prefix {
+            color: #198754;
+        }
+
+        .diff-row.diff-removed .diff-prefix {
+            color: #dc3545;
+        }
+
+        .diff-row.diff-changed .diff-prefix {
+            color: #d39e00;
+        }
+
+        [data-bs-theme="dark"] .diff-row.diff-changed .diff-prefix {
+            color: #ffca2c;
+        }
+
+        .diff-content {
+            flex: 1;
+            padding: 2px 10px 2px 4px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            color: var(--text-primary, #212529);
+        }
+
+        .diff-row.diff-empty-line .diff-content::before {
+            content: "\00a0";
+        }
+
+        .diff-row.diff-blank {
+            background-color: rgba(127, 127, 127, 0.04);
+        }
+
+        .diff-split {
+            display: flex;
+            gap: 0;
+        }
+
+        .diff-split-col {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .diff-split-col:first-child {
+            border-right: 1px solid var(--border-color, #2d3748);
+        }
+
+        .diff-split-header {
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            color: var(--text-muted, #94a3b8);
+            background-color: rgba(127, 127, 127, 0.08);
+            border-bottom: 1px solid var(--border-color, #2d3748);
+            position: sticky;
+            top: 0;
+        }
+
+        @media (max-width: 767px) {
+            .diff-split {
+                flex-direction: column;
+            }
+
+            .diff-split-col:first-child {
+                border-right: none;
+                border-bottom: 2px solid var(--border-color, #2d3748);
+            }
+        }
+
+        .view-pill {
+            cursor: pointer;
+            user-select: none;
+            color: var(--text-primary, #0f172a);
+            background-color: transparent;
+        }
+
+        .view-pill.active {
+            background-color: var(--accent-indigo, #4338ca) !important;
+            color: #fff !important;
+            border-color: var(--accent-indigo, #4338ca) !important;
+        }
+
+        /* 
+        color: #146c43;
+        text-decoration: none;
+        border-radius: 3px;
+        padding: 0 1px;
+        } */
+
+        [data-bs-theme="dark"] .diff-ins {
+            background-color: rgba(25, 135, 84, 0.38);
+            color: #75dda1;
+        }
+
+        .diff-del {
+            background-color: rgba(220, 53, 69, 0.26);
+            color: #b02a37;
+            text-decoration: line-through;
+            border-radius: 3px;
+            padding: 0 1px;
+        }
+
+        [data-bs-theme="dark"] .diff-del {
+            background-color: rgba(220, 53, 69, 0.36);
+            color: #ff9aa4;
+        }
+
+        .stat-box {
+            min-width: 92px;
+        }
+
+        .empty-state {
+            opacity: 0.55;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <nav id="navbar"></nav>
+
+    <main class="container py-5">
+
+        <h1 class="mb-3">
+            <i class="fa-solid fa-code-compare text-info me-2"></i>Text Compare / Diff Checker
+        </h1>
+
+        <p class="text-secondary lead fs-6">
+            Paste two versions of text below to see exactly what changed. Runs instantly and entirely in your browser
+            using Google's <code>diff-match-patch</code> library — nothing is uploaded anywhere.
+        </p>
+
+        <!-- Inputs -->
+        <div class="row g-3 mb-3">
+            <div class="col-lg-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label for="textOriginal" class="form-label fw-semibold text-body mb-0">
+                                <i class="fa-solid fa-file-lines text-danger me-1"></i> Original
+                            </label>
+                            <small class="text-body-secondary" id="countOriginal">0 chars</small>
+                        </div>
+                        <textarea id="textOriginal" class="form-control font-monospace compare-input"
+                            placeholder="Paste the original text here..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label for="textChanged" class="form-label fw-semibold text-body mb-0">
+                                <i class="fa-solid fa-file-circle-check text-success me-1"></i> Changed
+                            </label>
+                            <small class="text-body-secondary" id="countChanged">0 chars</small>
+                        </div>
+                        <textarea id="textChanged" class="form-control font-monospace compare-input"
+                            placeholder="Paste the updated text here..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="card shadow-sm mb-3">
+            <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span class="text-body-secondary small fw-semibold me-1">Compare by:</span>
+                    <span class="badge rounded-pill mode-pill border active" data-mode="word">Word</span>
+                    <span class="badge rounded-pill mode-pill border" data-mode="char">Character</span>
+                    <span class="badge rounded-pill mode-pill border" data-mode="line">Line</span>
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center gap-3">
+                    <div class="form-check form-switch mb-0">
+                        <input class="form-check-input" type="checkbox" id="semanticToggle" checked>
+                        <label class="form-check-label small text-body" for="semanticToggle">Clean up small
+                            edits</label>
+                    </div>
+                    <button id="btnSwap" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-arrow-right-arrow-left me-1"></i> Swap
+                    </button>
+                    <button id="btnClear" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-eraser me-1"></i> Clear
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="d-flex flex-wrap gap-2 mb-3" id="statsBar">
+            <div class="p-2 rounded border bg-output-box text-center stat-box">
+                <small class="text-body-secondary d-block">Added</small>
+                <span id="statAdded" class="fw-bold text-success">0</span>
+            </div>
+            <div class="p-2 rounded border bg-output-box text-center stat-box">
+                <small class="text-body-secondary d-block">Removed</small>
+                <span id="statRemoved" class="fw-bold text-danger">0</span>
+            </div>
+            <div class="p-2 rounded border bg-output-box text-center stat-box">
+                <small class="text-body-secondary d-block">Similarity</small>
+                <span id="statSimilarity" class="fw-bold text-info">100%</span>
+            </div>
+            <div
+                class="p-2 rounded border bg-output-box text-center flex-grow-1 d-flex align-items-center justify-content-center flex-wrap gap-2">
+                <span class="text-body-secondary small">
+                    <span class="d-inline-block rounded-1"
+                        style="width:12px;height:12px;background-color:rgba(25,135,84,0.35);vertical-align:middle;"></span>
+                    added line
+                    <span class="d-inline-block rounded-1 ms-2"
+                        style="width:12px;height:12px;background-color:rgba(220,53,69,0.3);vertical-align:middle;"></span>
+                    removed line
+                    <span class="d-inline-block rounded-1 ms-2"
+                        style="width:12px;height:12px;background-color:rgba(255,193,7,0.25);vertical-align:middle;"></span>
+                    changed line
+                    &nbsp;·&nbsp;
+                    <span class="diff-ins px-1">word added</span>
+                    <span class="diff-del px-1 ms-1">word removed</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- Diff Output -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-2">
+                    <h2 class="h5 card-title mb-0">
+                        <i class="fa-solid fa-eye text-warning me-2"></i>Diff Result
+                    </h2>
+                    <button id="btnCopyDiff" class="btn btn-sm btn-outline-info">
+                        <i class="fa-solid fa-copy me-1"></i> Copy Plain Text
+                    </button>
+                </div>
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                    <span class="text-body-secondary small fw-semibold me-1">View as:</span>
+                    <span class="badge rounded-pill view-pill border active" data-view="unified">
+                        <i class="fa-solid fa-list me-1"></i>Unified
+                    </span>
+                    <span class="badge rounded-pill view-pill border" data-view="split">
+                        <i class="fa-solid fa-table-columns me-1"></i>Side by Side
+                    </span>
+                    <span class="badge rounded-pill view-pill border" data-view="inline">
+                        <i class="fa-solid fa-align-left me-1"></i>Inline
+                    </span>
+                </div>
+                <div id="diffOutput" class="p-3 rounded border bg-output-box empty-state">
+                    Paste text into both boxes above to see the comparison here.
+                </div>
+            </div>
+        </div>
+
+        <!-- SEO / Explanation Content -->
+        <section class="mt-5 pt-4 border-top">
+            <div class="row">
+                <div class="col-md-12">
+                    <h2 class="h4 mb-3">How This Text Comparison Works</h2>
+                    <p class="text-secondary">
+                        This tool is powered by <a href="https://github.com/google/diff-match-patch" target="_blank"
+                            rel="noopener">Google's diff-match-patch</a> library, the same diffing engine used inside
+                        products like Google Docs. It finds the shortest set of insertions and deletions that turns the
+                        Original text into the Changed text, using an efficient implementation of Myers' diff algorithm.
+                    </p>
+                    <p class="text-secondary">
+                        Because everything runs as JavaScript directly in your browser, comparisons happen instantly
+                        with no server round-trip, and your text never leaves your device.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <h3 class="h5">Comparison Modes</h3>
+                    <ul class="text-secondary ps-3">
+                        <li><strong>Word:</strong> the default — good for comparing prose, articles, or paragraphs,
+                            since it groups changes by whole words instead of single letters.</li>
+                        <li><strong>Character:</strong> the most granular — useful for short strings, code snippets, or
+                            spotting a single typo.</li>
+                        <li><strong>Line:</strong> treats each line as one unit — ideal for comparing config files,
+                            logs, or code where whole lines are added or removed.</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h3 class="h5">"Clean Up Small Edits"</h3>
+                    <p class="text-secondary small">
+                        Raw diffs can sometimes report technically-correct but oddly-shaped changes, like splitting one
+                        word into several tiny fragments. Enabling this option runs diff-match-patch's semantic cleanup
+                        pass, which merges those fragments into more human-readable, meaningful chunks — recommended for
+                        most everyday comparisons.
+                    </p>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <h3 class="h5">Output Views</h3>
+                    <ul class="text-secondary ps-3">
+                        <li><strong>Unified:</strong> one column with both old and new line numbers — closest to a
+                            standard <code>git diff</code>, and the most compact for scanning changes quickly.</li>
+                        <li><strong>Side by Side:</strong> Original and Changed shown in two aligned columns, like a
+                            split-view code review — easiest for comparing two full documents visually.</li>
+                        <li><strong>Inline:</strong> one flowing paragraph with insertions and deletions highlighted in
+                            place — best for short strings, sentences, or quick spot-checks where line numbers aren't
+                            needed.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer id="footer"></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Google diff-match-patch (lightweight, compressed build) -->
+    <script src="https://cdn.jsdelivr.net/gh/google/diff-match-patch@master/javascript/diff_match_patch.js"></script>
+
+    <script src="../js/utils.js"></script>
+    <script src="../js/tools.js"></script>
+    <script src="../js/app.js"></script>
+
+    <script>
+
+        const textOriginal = document.getElementById("textOriginal");
+        const textChanged = document.getElementById("textChanged");
+        const countOriginal = document.getElementById("countOriginal");
+        const countChanged = document.getElementById("countChanged");
+        const modePills = document.querySelectorAll(".mode-pill");
+        const viewPills = document.querySelectorAll(".view-pill");
+        const semanticToggle = document.getElementById("semanticToggle");
+        const btnSwap = document.getElementById("btnSwap");
+        const btnClear = document.getElementById("btnClear");
+        const btnCopyDiff = document.getElementById("btnCopyDiff");
+        const diffOutput = document.getElementById("diffOutput");
+        const statAdded = document.getElementById("statAdded");
+        const statRemoved = document.getElementById("statRemoved");
+        const statSimilarity = document.getElementById("statSimilarity");
+
+        let activeMode = "word";
+        let viewMode = "unified";
+        let lastDiffs = [];
+        let debounceTimer = null;
+        let lastDiffPlainText = "";
+
+        const dmp = new diff_match_patch();
+
+        /* =========================================================
+           Token-based diffing for Word / Line modes.
+           diff-match-patch works on raw strings, so for word/line
+           granularity each unique token (word or line) is mapped to
+           a single private-use character, diffed at that level, then
+           mapped back to the original tokens.
+           ========================================================= */
+        function tokenize(text, mode) {
+            if (mode === "line") {
+                return text.match(/[^\n]*\n|[^\n]+$/g) || [];
+            }
+            // word mode: keep whitespace runs as their own tokens so spacing is preserved
+            return text.match(/\S+|\s+/g) || [];
+        }
+
+        function diffByTokens(text1, text2, mode, cleanup) {
+            const tokenArray = [""];
+            const tokenHash = new Map();
+
+            function munge(text) {
+                let chars = "";
+                tokenize(text, mode).forEach(token => {
+                    let idx = tokenHash.get(token);
+                    if (idx === undefined) {
+                        idx = tokenArray.length;
+                        tokenArray.push(token);
+                        tokenHash.set(token, idx);
+                    }
+                    chars += String.fromCharCode(idx);
+                });
+                return chars;
+            }
+
+            const chars1 = munge(text1);
+            const chars2 = munge(text2);
+
+            const diffs = dmp.diff_main(chars1, chars2, false);
+            if (cleanup) dmp.diff_cleanupSemantic(diffs);
+
+            // Map encoded chars back to their original tokens
+            diffs.forEach(d => {
+                let text = "";
+                for (let i = 0; i < d[1].length; i++) {
+                    text += tokenArray[d[1].charCodeAt(i)];
+                }
+                d[1] = text;
+            });
+
+            return diffs;
+        }
+
+        function diffByChar(text1, text2, cleanup) {
+            const diffs = dmp.diff_main(text1, text2);
+            if (cleanup) dmp.diff_cleanupSemantic(diffs);
+            return diffs;
+        }
+
+        /* =========================================================
+           Word/Line diffing only compares whole tokens, so an edit
+           INSIDE a word (e.g. "efficient" -> "efficientasddasd")
+           shows up as a full delete+insert of the whole token instead
+           of just the inserted/removed characters. This pass finds
+           adjacent delete+insert pairs and re-diffs them at the
+           character level so only the actual change is highlighted.
+           ========================================================= */
+        function refineReplacements(diffs) {
+            const result = [];
+
+            for (let i = 0; i < diffs.length; i++) {
+                const cur = diffs[i];
+                const next = diffs[i + 1];
+
+                const isDeleteThenInsert = cur[0] === -1 && next && next[0] === 1;
+                const isInsertThenDelete = cur[0] === 1 && next && next[0] === -1;
+
+                if (isDeleteThenInsert || isInsertThenDelete) {
+                    const oldText = isDeleteThenInsert ? cur[1] : next[1];
+                    const newText = isDeleteThenInsert ? next[1] : cur[1];
+
+                    const subDiffs = dmp.diff_main(oldText, newText);
+                    dmp.diff_cleanupSemantic(subDiffs);
+                    subDiffs.forEach(d => result.push(d));
+                    i++; // consumed both cur and next
+                } else {
+                    result.push(cur);
+                }
+            }
+
+            return result;
+        }
+
+        function escapeHtml(str) {
+            return str
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+        }
+
+        /* =========================================================
+           Group a flat diff-match-patch op list into logical lines,
+           so the result can be rendered as a line-numbered table
+           (like a unified diff view) instead of one big paragraph.
+           ========================================================= */
+        function groupDiffsIntoLines(diffs) {
+            const lines = [];
+            let current = [];
+
+            function finalizeLine() {
+                const hasEqual = current.some(s => s.op === 0);
+                const hasAdded = current.some(s => s.op === 1);
+                const hasRemoved = current.some(s => s.op === -1);
+
+                let type;
+                if (!hasAdded && !hasRemoved) {
+                    type = "same";
+                } else if (hasAdded && !hasRemoved && !hasEqual) {
+                    type = "added";
+                } else if (hasRemoved && !hasAdded && !hasEqual) {
+                    type = "removed";
+                } else {
+                    // Mixed: this logical line exists in both old and new,
+                    // just with some words/chars changed within it.
+                    type = "changed";
+                }
+
+                lines.push({ type, segments: current });
+                current = [];
+            }
+
+            diffs.forEach(d => {
+                const op = d[0];
+                const text = d[1];
+                const parts = text.split("\n");
+
+                parts.forEach((part, i) => {
+                    if (part !== "") {
+                        current.push({ op, text: part });
+                    }
+                    if (i < parts.length - 1) {
+                        finalizeLine();
+                    }
+                });
+            });
+
+            if (current.length > 0) {
+                finalizeLine();
+            }
+
+            return lines;
+        }
+
+        function buildPlainText(lines) {
+            if (!lines.length) return "No differences found — texts are identical.";
+            return lines.map(line => {
+                const PREFIX = { same: " ", added: "+", removed: "-", changed: "~" };
+                const rawLineText = line.segments.map(s => s.text).join("");
+                return `${PREFIX[line.type]} ${rawLineText}`;
+            }).join("\n");
+        }
+
+        function renderSegmentsHtml(segments, mixedHighlight) {
+            return segments.map(seg => {
+                const safe = escapeHtml(seg.text);
+                if (mixedHighlight) {
+                    if (seg.op === 1) return `<span class="diff-ins">${safe}</span>`;
+                    if (seg.op === -1) return `<span class="diff-del">${safe}</span>`;
+                }
+                return safe;
+            }).join("");
+        }
+
+        /* ---------- Unified view: one column, line numbers for both sides ---------- */
+        function renderUnifiedHtml(lines) {
+            const PREFIX = { same: "\u00a0", added: "+", removed: "-", changed: "~" };
+            let oldNum = 0, newNum = 0;
+
+            const rows = lines.map(line => {
+                let oldLabel = "", newLabel = "";
+
+                if (line.type === "same" || line.type === "changed") {
+                    oldNum++; newNum++;
+                    oldLabel = oldNum; newLabel = newNum;
+                } else if (line.type === "removed") {
+                    oldNum++;
+                    oldLabel = oldNum;
+                } else if (line.type === "added") {
+                    newNum++;
+                    newLabel = newNum;
+                }
+
+                const contentHtml = renderSegmentsHtml(line.segments, line.type === "changed") || "";
+                const emptyClass = line.segments.length === 0 ? " diff-empty-line" : "";
+
+                return `
+        <div class="diff-row diff-${line.type}${emptyClass}">
+            <div class="diff-linenum">${oldLabel}</div>
+            <div class="diff-linenum">${newLabel}</div>
+            <div class="diff-prefix">${PREFIX[line.type]}</div>
+            <div class="diff-content">${contentHtml}</div>
+        </div>`;
+            }).join("");
+
+            return `<div class="diff-table">${rows}</div>`;
+        }
+
+        /* ---------- Side-by-side view: two synced columns, old vs new ---------- */
+        function renderSplitHtml(lines) {
+            let oldNum = 0, newNum = 0;
+            let leftRows = "", rightRows = "";
+
+            lines.forEach(line => {
+                const oldSegments = line.segments.filter(s => s.op !== 1);
+                const newSegments = line.segments.filter(s => s.op !== -1);
+
+                if (line.type === "same") {
+                    oldNum++; newNum++;
+                    const content = renderSegmentsHtml(line.segments, false);
+                    leftRows += `<div class="diff-row diff-same"><div class="diff-linenum">${oldNum}</div><div class="diff-prefix">\u00a0</div><div class="diff-content">${content}</div></div>`;
+                    rightRows += `<div class="diff-row diff-same"><div class="diff-linenum">${newNum}</div><div class="diff-prefix">\u00a0</div><div class="diff-content">${content}</div></div>`;
+
+                } else if (line.type === "removed") {
+                    oldNum++;
+                    const content = renderSegmentsHtml(line.segments, false);
+                    leftRows += `<div class="diff-row diff-removed"><div class="diff-linenum">${oldNum}</div><div class="diff-prefix">-</div><div class="diff-content">${content}</div></div>`;
+                    rightRows += `<div class="diff-row diff-blank"><div class="diff-linenum"></div><div class="diff-prefix"></div><div class="diff-content"></div></div>`;
+
+                } else if (line.type === "added") {
+                    newNum++;
+                    const content = renderSegmentsHtml(line.segments, false);
+                    leftRows += `<div class="diff-row diff-blank"><div class="diff-linenum"></div><div class="diff-prefix"></div><div class="diff-content"></div></div>`;
+                    rightRows += `<div class="diff-row diff-added"><div class="diff-linenum">${newNum}</div><div class="diff-prefix">+</div><div class="diff-content">${content}</div></div>`;
+
+                } else {
+                    // changed: exists on both sides, with different inline highlights
+                    oldNum++; newNum++;
+                    const leftContent = renderSegmentsHtml(oldSegments, true);
+                    const rightContent = renderSegmentsHtml(newSegments, true);
+                    leftRows += `<div class="diff-row diff-changed"><div class="diff-linenum">${oldNum}</div><div class="diff-prefix">~</div><div class="diff-content">${leftContent}</div></div>`;
+                    rightRows += `<div class="diff-row diff-changed"><div class="diff-linenum">${newNum}</div><div class="diff-prefix">~</div><div class="diff-content">${rightContent}</div></div>`;
+                }
+            });
+
+            return `
+    <div class="diff-split">
+        <div class="diff-split-col">
+            <div class="diff-split-header">Original</div>
+            <div class="diff-table">${leftRows}</div>
+        </div>
+        <div class="diff-split-col">
+            <div class="diff-split-header">Changed</div>
+            <div class="diff-table">${rightRows}</div>
+        </div>
+    </div>`;
+        }
+
+        /* ---------- Inline view: one flowing paragraph, no line structure ---------- */
+        function renderInlineHtml(diffs) {
+            return diffs.map(d => {
+                const op = d[0], text = d[1];
+                const safe = escapeHtml(text);
+                if (op === 1) return `<span class="diff-ins">${safe}</span>`;
+                if (op === -1) return `<span class="diff-del">${safe}</span>`;
+                return safe;
+            }).join("");
+        }
+
+        function renderDiff(diffs) {
+            lastDiffs = diffs;
+            const lines = groupDiffsIntoLines(diffs);
+
+            let added = 0, removed = 0, unchanged = 0;
+            diffs.forEach(d => {
+                const op = d[0], text = d[1];
+                if (op === 1) added += text.length;
+                else if (op === -1) removed += text.length;
+                else unchanged += text.length;
+            });
+
+            diffOutput.classList.remove("empty-state");
+
+            if (!lines.length) {
+                diffOutput.innerHTML = "<span class='text-body-secondary'>No differences found — texts are identical.</span>";
+            } else if (viewMode === "split") {
+                diffOutput.innerHTML = renderSplitHtml(lines);
+            } else if (viewMode === "inline") {
+                diffOutput.innerHTML = `<div class="p-1" style="white-space:pre-wrap; word-break:break-word;">${renderInlineHtml(diffs)}</div>`;
+            } else {
+                diffOutput.innerHTML = renderUnifiedHtml(lines);
+            }
+
+            lastDiffPlainText = buildPlainText(lines);
+
+            const total = added + removed + (unchanged * 2);
+            const similarity = total === 0 ? 100 : Math.round(((unchanged * 2) / total) * 100);
+
+            statAdded.textContent = added;
+            statRemoved.textContent = removed;
+            statSimilarity.textContent = similarity + "%";
+        }
+
+        function runDiff() {
+            const t1 = textOriginal.value;
+            const t2 = textChanged.value;
+
+            countOriginal.textContent = `${t1.length} chars`;
+            countChanged.textContent = `${t2.length} chars`;
+
+            if (!t1 && !t2) {
+                diffOutput.classList.add("empty-state");
+                diffOutput.textContent = "Paste text into both boxes above to see the comparison here.";
+                lastDiffPlainText = "";
+                lastDiffs = [];
+                statAdded.textContent = "0";
+                statRemoved.textContent = "0";
+                statSimilarity.textContent = "100%";
+                return;
+            }
+
+            const cleanup = semanticToggle.checked;
+
+            let diffs;
+            if (activeMode === "char") {
+                diffs = diffByChar(t1, t2, cleanup);
+            } else {
+                diffs = diffByTokens(t1, t2, activeMode, cleanup);
+                diffs = refineReplacements(diffs);
+            }
+
+            renderDiff(diffs);
+        }
+
+        function scheduleDiff() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(runDiff, 150);
+        }
+
+        /* =========================================================
+           Event Listeners
+           ========================================================= */
+        textOriginal.addEventListener("input", scheduleDiff);
+        textChanged.addEventListener("input", scheduleDiff);
+        semanticToggle.addEventListener("change", runDiff);
+
+        modePills.forEach(pill => {
+            pill.addEventListener("click", () => {
+                modePills.forEach(p => p.classList.remove("active"));
+                pill.classList.add("active");
+                activeMode = pill.getAttribute("data-mode");
+                runDiff();
+            });
+        });
+
+        viewPills.forEach(pill => {
+            pill.addEventListener("click", () => {
+                viewPills.forEach(p => p.classList.remove("active"));
+                pill.classList.add("active");
+                viewMode = pill.getAttribute("data-view");
+                if (lastDiffs.length || textOriginal.value || textChanged.value) {
+                    renderDiff(lastDiffs);
+                }
+            });
+        });
+
+        btnSwap.addEventListener("click", () => {
+            const temp = textOriginal.value;
+            textOriginal.value = textChanged.value;
+            textChanged.value = temp;
+            runDiff();
+        });
+
+        btnClear.addEventListener("click", () => {
+            textOriginal.value = "";
+            textChanged.value = "";
+            runDiff();
+            textOriginal.focus();
+        });
+
+        btnCopyDiff.addEventListener("click", async () => {
+            if (lastDiffPlainText) {
+                await navigator.clipboard.writeText(lastDiffPlainText);
+                const original = btnCopyDiff.innerHTML;
+                btnCopyDiff.innerHTML = `<i class="fa-solid fa-check me-1 text-success"></i> Copied!`;
+                setTimeout(() => btnCopyDiff.innerHTML = original, 1500);
+            }
+        });
+
+        // Init
+        runDiff();
+
+    </script>
+
+</body>
+
+</html>
